@@ -1,0 +1,56 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+
+  .main-left {
+    display: block;
+    min-height: 100vh;
+    flex: 0 0 auto;
+    width: 260px;
+    padding: 0px;
+    background-color: white;
+    border: 1px solid #f3f4f6;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 5;
+
+    .left-logo-main {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      height: 88px;
+
+      .left-logo {
+        height: 40px;
+
+        padding-left: 32px;
+        padding-right: 32px;
+        img.logo {
+          min-width: 100%;
+          max-width: 100%;
+          min-height: 100%;
+          max-height: 100%;
+        }
+      }
+    }
+  }
+
+  .main-right {
+    header {
+      padding: 10px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    border: 1px solid #f3f4f6;
+    width: 100%;
+    margin-left: auto;
+    box-sizing: border-box;
+    margin-right: auto;
+    display: block;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
