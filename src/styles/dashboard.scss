@@ -39,6 +39,40 @@ div.db-main {
       gap: 28px;
       display: grid;
       grid-template-columns: repeat(2, 290px);
+
+      div.grid-sub {
+        background-color: rgb(255, 255, 255);
+        color: rgba(18, 20, 30, 0.87);
+        transition: box-shadow 300ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
+        box-shadow: rgba(204, 204, 204, 0.25) 0px 0px 6px 3px;
+        border: none rgb(224, 224, 224);
+        border-radius: 20px;
+        background-image: none;
+        overflow: hidden;
+        padding: 28px;
+        text-decoration: none;
+        span {
+          display: block;
+          text-align: center;
+        }
+        span.grid-sub-title {
+          margin: 0px;
+          font-size: 1.125rem;
+          font-weight: 500;
+          font-family: Walsheim, Arial;
+          line-height: 1.334;
+        }
+        span.grid-sub-info {
+          margin: 0px;
+          font-size: 0.875rem;
+          font-weight: 400;
+          letter-spacing: 0.17px;
+          font-family: Walsheim, Arial;
+          line-height: 1.43;
+          color: rgba(18, 20, 30, 0.6);
+          display: block;
+        }
+      }
     }
     div.connect-wallet {
       max-width: max-content;

@@ -20,10 +20,22 @@ function Dashboard() {
         <h1>Connect to Superfluid</h1>
         <p>Connect your wallet, view any wallet, or take a look around!</p>
         <div className="db-grid-sub">
-          <div className="grid-sub"></div>
-          <div className="grid-sub"></div>
-          <div className="grid-sub"></div>
-          <div className="grid-sub"></div>
+          <div className="grid-sub">
+            <span className="grid-sub-title">Get Super Tokens</span>
+            <span className="grid-sub-info">Wrap any token in your wallet</span>
+          </div>
+          <div className="grid-sub">
+            <span className="grid-sub-title">Get Super Tokens</span>
+            <span className="grid-sub-info">Wrap any token in your wallet</span>
+          </div>
+          <div className="grid-sub">
+            <span className="grid-sub-title">Get Super Tokens</span>
+            <span className="grid-sub-info">Wrap any token in your wallet</span>
+          </div>
+          <div className="grid-sub">
+            <span className="grid-sub-title">Get Super Tokens</span>
+            <span className="grid-sub-info">Wrap any token in your wallet</span>
+          </div>
         </div>
         <div className="connect-wallet">
           <ConnectButton
