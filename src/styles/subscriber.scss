@@ -9,8 +9,125 @@
   }
 }
 
-.subscriber-add-btn {
-  width: 100%;
+.subscriber-header {
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 2px solid #f3f4f6;
+  margin: 20px 0 0 0;
+  box-sizing: border-box;
+  padding: 0 0 10px 0;
+
+  button {
+    margin: 0px 10px;
+    padding: 10px 40px;
+    box-shadow: none;
+    background: none;
+    border: none;
+    color: rgba(18, 20, 30, 0.4);
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    -webkit-transition: background-color 150ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
+    transition: background-color 150ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
+  }
+  button.active {
+    background: rgba(16, 187, 53, 0.08);
+    color: #10bb35;
+  }
+}
+.subscriber-add-box {
+  width: 50%;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: rgba(204, 204, 204, 0.25) 0px 0px 6px 3px;
+  // border: 1px solid #10bb35ff;
+  overflow: hidden;
+  padding: 28px;
+  max-width: 500px;
+  border-radius: 20px;
+
+  h4.index-placeholder {
+    color: rgba(18, 20, 30, 0.6);
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0.009375rem;
+  }
+  .subscriber-add-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0px 20px 0px;
+
+    button {
+      cursor: pointer;
+      padding: 15px 40px;
+      background-color: #10bb35ff;
+      border: 1px solid #10bb35ff;
+      box-shadow: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all linear 0.1s;
+
+      &:hover {
+        transform: translateY(-3px);
+      }
+    }
+  }
+  .subscriber-input-div {
+    background-color: rgb(255, 255, 255);
+    color: rgba(18, 20, 30, 0.87);
+    transition: box-shadow 300ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
+    box-shadow: rgba(204, 204, 204, 0.25) 0px 0px 6px 3px;
+    background-image: none;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 20px;
+    max-width: 100%;
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 15px;
+    margin: 10px 0px;
+
+    input {
+      border: 0px;
+      box-sizing: content-box;
+      background: none;
+      // height: 1.4375em;
+      margin: 0px;
+      -webkit-tap-highlight-color: transparent;
+      display: block;
+      min-width: 0px;
+      width: 100%;
+      animation-name: mui-auto-fill-cancel;
+      animation-duration: 10ms;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 1.2rem;
+      line-height: 100%;
+      letter-spacing: 0.009375rem;
+      padding: 0px;
+
+      &:focus {
+        border: none;
+        outline: none;
+      }
+    }
+  }
+}
+
+.subscriber-info {
+  width: 80%;
+  margin-right: auto;
+  margin-left: auto;
   display: flex;
   justify-content: center;
   align-items: center;
