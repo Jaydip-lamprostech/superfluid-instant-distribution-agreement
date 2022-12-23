@@ -1,0 +1,35 @@
+.go-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+
+  svg {
+    fill: #10bb35ff;
+  }
+}
+
+.subscriber-add-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  button {
+    cursor: pointer;
+    padding: 15px 40px;
+    background-color: #10bb35ff;
+    border: 1px solid #10bb35ff;
+    box-shadow: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all linear 0.1s;
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+}
