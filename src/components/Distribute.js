@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FormControl, MenuItem, Select } from "@mui/material";
+import "../styles/distribute.scss";
 
 function Distribute() {
   const [indexValue, setIndexValue] = useState("");
@@ -24,10 +25,10 @@ function Distribute() {
 </div> */}
       <h1 className="distribute-h1">Distribute</h1>
       <p className="distribute-p">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur,
-        rem?
+        Takes the specified amount of Super Tokens from the sender's account and
+        distributes them to all receivers
       </p>
-      <div className="subscriber-add-box">
+      <div className="distribute-box">
         <FormControl required fullWidth>
           {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
           <Select
@@ -74,23 +75,25 @@ function Distribute() {
           </Select>
         </FormControl>
         {/* <h3>Subscriber Address</h3> */}
-        <div className="subscriber-input-div">
+        {/* <div className="subscriber-input-div">
           <input
             type="text"
             className="subscriber-input-index"
             placeholder="Subscriber Address"
           />
-        </div>
+        </div> */}
         {/* <h3>Unit</h3> */}
-        <div className="subscriber-input-div">
+        {/* <div className="subscriber-input-div">
           <input
             type="text"
             className="subscriber-input-index"
             placeholder="Unit"
           />
-        </div>
-        <div className="subscriber-add-btn">
-          <button>Add Subscriber</button>
+        </div> */}
+        <h2 className="distribute-h2">Subscribers</h2>
+        <div className="distribute-subscribers-list"></div>
+        <div className="distribute-btn">
+          <button>Distribute</button>
         </div>
       </div>
     </div>
