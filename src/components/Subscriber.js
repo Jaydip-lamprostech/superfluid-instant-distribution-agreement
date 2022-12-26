@@ -80,7 +80,12 @@ function Subscriber() {
       ) : showAdd ? (
         <SubscriberAdd />
       ) : showList ? (
-        <SubscriberList />
+        <SubscriberList
+          setAdd={setAdd}
+          setApprove={setApprove}
+          setInfo={setInfo}
+          setList={setList}
+        />
       ) : showApprove ? (
         <SubscriberApprove />
       ) : null}

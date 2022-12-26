@@ -8,11 +8,13 @@ import Dashboard from "../components/Dashboard";
 import IDAIndex from "../components/IDAIndex";
 import Subscriber from "../components/Subscriber";
 import Distribute from "../components/Distribute";
+import Agreements from "../components/Agreements";
 
 function LandingPage() {
   const [showDashboard, setDashboard] = useState(true);
   const [showIDA, setIDA] = useState(false);
   const [showSubscriber, setSubscriber] = useState(false);
+  const [showAgreement, setAgreement] = useState(false);
   const [showDistribute, setDistribute] = useState(false);
 
   return (
@@ -30,6 +32,7 @@ function LandingPage() {
               setDashboard(true);
               setIDA(false);
               setSubscriber(false);
+              setAgreement(false);
               setDistribute(false);
             }}
           >
@@ -55,6 +58,7 @@ function LandingPage() {
               setDashboard(false);
               setIDA(true);
               setSubscriber(false);
+              setAgreement(false);
               setDistribute(false);
             }}
           >
@@ -78,6 +82,7 @@ function LandingPage() {
               setDashboard(false);
               setIDA(false);
               setSubscriber(true);
+              setAgreement(false);
               setDistribute(false);
             }}
           >
@@ -96,11 +101,36 @@ function LandingPage() {
             <div className="link-text">Subscriber</div>
           </div>
           <div
+            className={showAgreement ? "left-ul-link active" : "left-ul-link"}
+            onClick={() => {
+              setDashboard(false);
+              setIDA(false);
+              setSubscriber(false);
+              setAgreement(true);
+              setDistribute(false);
+            }}
+          >
+            <div className="link-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 0 24 24"
+                width="24px"
+                fill="#000000"
+              >
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path d="M2 21h10c.55 0 1 .45 1 1s-.45 1-1 1H2c-.55 0-1-.45-1-1s.45-1 1-1zM5.24 8.07l2.83-2.83L20.8 17.97c.78.78.78 2.05 0 2.83-.78.78-2.05.78-2.83 0L5.24 8.07zm8.49-5.66l2.83 2.83c.78.78.78 2.05 0 2.83l-1.42 1.42-5.65-5.66 1.41-1.41c.78-.79 2.05-.79 2.83-.01zm-9.9 7.07l5.66 5.66-1.41 1.41c-.78.78-2.05.78-2.83 0l-2.83-2.83c-.78-.78-.78-2.05 0-2.83l1.41-1.41z" />
+              </svg>
+            </div>
+            <div className="link-text selected">Agreements</div>
+          </div>
+          <div
             className={showDistribute ? "left-ul-link active" : "left-ul-link"}
             onClick={() => {
               setDashboard(false);
               setIDA(false);
               setSubscriber(false);
+              setAgreement(false);
               setDistribute(true);
             }}
           >
@@ -141,6 +171,8 @@ function LandingPage() {
             <IDAIndex />
           ) : showSubscriber ? (
             <Subscriber />
+          ) : showAgreement ? (
+            <Agreements />
           ) : showDistribute ? (
             <Distribute />
           ) : null}
