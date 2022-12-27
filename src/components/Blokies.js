@@ -7,9 +7,9 @@ function Blokies() {
       seed="Jeremy"
       size={10}
       scale={3}
-      color="#dfe"
-      bgColor="#ffe"
-      spotColor="#abc"
+      // color="#dfe"
+      // bgColor=""
+      // spotColor="#abc"
       className="identicon"
     />
   );

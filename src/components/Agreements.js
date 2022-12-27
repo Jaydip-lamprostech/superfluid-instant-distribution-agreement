@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/agreements.scss";
+import Blokies from "./Blokies";
 
 function Agreements() {
   return (
@@ -9,65 +10,102 @@ function Agreements() {
         List of all the IDAs with subscribers, Units(proportion) and Index
         number.
       </p>
-      <div className="subscriber-add-box-table">
+      {/* ****************for mapping************** */}
+      <div className="agreement-box">
         {/* <h3>Subscriber Address</h3> */}
-        <div className="subscriber-list">
-          <table className="subscriber-list-table">
-            <thead>
-              <tr>
-                <th>Index</th>
-                <th>Subscriber</th>
-                <th>Units</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>#34567</td>
-                <td>
-                  <span className="table-subscriber-address">
-                    0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                  </span>
-                </td>
-                <td>10</td>
-                <td>#34567</td>
-              </tr>
-              <tr>
-                <td>#76589</td>
-                <td>
-                  <span className="table-subscriber-address">
-                    0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                  </span>
-                </td>
-                <td>5</td>
-                <td>#76589</td>
-              </tr>
-              <tr>
-                <td>#69897</td>
-                <td>
-                  <span className="table-subscriber-address">
-                    0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                  </span>
-                </td>
-                <td>8</td>
-                <td>#69897</td>
-              </tr>
-              <tr>
-                <td>#34567</td>
-                <td>
-                  <span className="table-subscriber-address">
-                    0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                  </span>
-                </td>
-                <td>18</td>
-                <td>#34567</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="subscriber-add-btn">
-          <button>Add Subscriber</button>
+
+        <div className="agreement-list">
+          <div className="agreement-item-head">
+            <span className="agreement-number-span">
+              Index #<span className="agreement-number">48986</span>
+            </span>
+            <span className="agreement-number-span">
+              Amount -<span className="agreement-number">1000 fDAIx</span>
+            </span>
+          </div>
+          <div className="agreement-subscribers">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subscribers</th>
+                  <th>Units</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* ******** table data map ********** */}
+                <tr>
+                  <td>
+                    <div className="blokies-and-address">
+                      <Blokies />
+                      <span className="subscriber-address">
+                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                      </span>
+                    </div>
+                  </td>
+                  <td>10</td>
+                </tr>
+                {/* ******** table data map ********** */}
+                <tr>
+                  <td>
+                    <div className="blokies-and-address">
+                      <Blokies />
+                      <span className="subscriber-address">
+                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                      </span>
+                    </div>
+                  </td>
+                  <td>5</td>
+                </tr>
+                {/* ******** table data map ********** */}
+                {/* ******** table data map ********** */}
+                <tr>
+                  <td>
+                    <div className="blokies-and-address">
+                      <Blokies />
+                      <span className="subscriber-address">
+                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                      </span>
+                    </div>
+                  </td>
+                  <td>5</td>
+                </tr>
+                {/* ******** table data map ********** */}
+                {/* ******** table data map ********** */}
+                <tr>
+                  <td>
+                    <div className="blokies-and-address">
+                      <Blokies />
+                      <span className="subscriber-address">
+                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                      </span>
+                    </div>
+                  </td>
+                  <td>5</td>
+                </tr>
+                {/* ******** table data map ********** */}
+                {/* ******** table data map ********** */}
+                <tr>
+                  <td>
+                    <div className="blokies-and-address">
+                      <Blokies />
+                      <span className="subscriber-address">
+                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                      </span>
+                    </div>
+                  </td>
+                  <td>5</td>
+                </tr>
+                {/* ******** table data map ********** */}
+              </tbody>
+            </table>
+          </div>
+          <div className="agreements-list-buttons">
+            <button className="edit-agreement">Edit</button>
+            <button className="distribute-agreement">Distribute</button>
+          </div>
         </div>
       </div>
+      {/* ****************for mapping************** */}
     </div>
   );
 }

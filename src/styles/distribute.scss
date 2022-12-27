@@ -78,6 +78,68 @@
         }
       }
     }
+    h2.distribute-h2 {
+      color: #10bb35ff;
+      margin-top: 50px;
+    }
+    .distribute-subscribers-list {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: center;
+
+      table {
+        width: 100%;
+        th {
+          padding: 10px 0px;
+          margin: 0px 0px 8px;
+          font-size: 1.2rem;
+          font-weight: 500;
+          letter-spacing: 0.25px;
+          //   font-family: Walsheim, Arial;
+          line-height: 1.235;
+          color: #12141e99;
+          // text-align: center;
+        }
+        td {
+          // border: 1px solid #8292ad0a;
+          text-align: center;
+          padding: 28px;
+        }
+        tbody {
+          tr {
+            box-shadow: rgba(204, 204, 204, 0.25) 0px 0px 6px 3px;
+            border-radius: 20px;
+            margin: 10px 0px;
+          }
+        }
+        td:nth-of-type(1) {
+          text-align: left;
+          max-width: 60%;
+          text-overflow: ellipsis;
+        }
+        td:last-of-type {
+          width: 20%;
+        }
+
+        .blokies-and-address {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          .identicon {
+            border-radius: 5px;
+          }
+          span.subscriber-address {
+            margin-left: 10px;
+            max-width: 80%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
   }
 
   .distribute-btn {

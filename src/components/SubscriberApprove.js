@@ -37,7 +37,7 @@ function SubscriberApprove() {
             sx={{
               margin: "10px 0px",
               color: "rgba(18, 20, 30, 0.87)",
-              fontSize: "1.2rem",
+              fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
                 {

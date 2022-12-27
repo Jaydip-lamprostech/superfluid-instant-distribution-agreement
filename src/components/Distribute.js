@@ -5,6 +5,7 @@ import Blokies from "./Blokies";
 
 function Distribute() {
   const [indexValue, setIndexValue] = useState("");
+  const [amount, setAmount] = useState();
 
   const handleChange = (e) => {
     setIndexValue(e.target.value);
@@ -40,7 +41,7 @@ function Distribute() {
             sx={{
               margin: "10px 0px",
               color: "rgba(18, 20, 30, 0.87)",
-              fontSize: "1.2rem",
+              fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
                 {
@@ -89,13 +90,54 @@ function Distribute() {
             type="number"
             className="subscriber-input-index"
             placeholder="Enter Token"
+            onChange={(e) => setAmount(e.target.value)}
           />
         </div>
-        <h2 className="distribute-h2">Subscribers</h2>
+        <h2 className="distribute-h2">Distribution</h2>
         <div className="distribute-subscribers-list">
-          <div className="inside-subscriber-list">
-            <Blokies />
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Subscribers</th>
+                <th>Units</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* ******** table data map ********** */}
+              <tr>
+                <td>
+                  <div className="blokies-and-address">
+                    <Blokies />
+                    <span className="subscriber-address">
+                      0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                    </span>
+                  </div>
+                </td>
+                <td>10</td>
+                <td>
+                  {amount ? parseFloat((amount / 15) * 10).toFixed(2) : "-"}
+                </td>
+              </tr>
+              {/* ******** table data map ********** */}
+              <tr>
+                <td>
+                  <div className="blokies-and-address">
+                    <Blokies />
+                    <span className="subscriber-address">
+                      0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                    </span>
+                  </div>
+                </td>
+                <td>5</td>
+                <td>
+                  {amount ? parseFloat((amount / 15) * 5).toFixed(2) : "-"}
+                </td>
+              </tr>
+              {/* ******** table data map ********** */}
+            </tbody>
+          </table>
+          <div className="inside-subscriber-list"></div>
         </div>
         <div className="distribute-btn">
           <button>Distribute</button>
