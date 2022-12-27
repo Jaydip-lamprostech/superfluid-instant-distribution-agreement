@@ -1,4 +1,3 @@
-import { Avatar } from "@mui/material";
 import React from "react";
 
 function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
@@ -12,29 +11,34 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
         {/* <h3>Subscriber Address</h3> */}
         <div className="subscriber-list">
           <table className="subscriber-list-table">
-            <tr>
-              <th>Subscriber</th>
-              <th>Unit</th>
-              <th>IDA index</th>
-            </tr>
-            <tr>
-              <td>
-                <span className="table-subscriber-address">
-                  0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                </span>
-              </td>
-              <td>Germany</td>
-              <td>#34567</td>
-            </tr>
-            <tr>
-              <td>
-                <span className="table-subscriber-address">
-                  0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                </span>
-              </td>
-              <td>Mexico</td>
-              <td>#34567</td>
-            </tr>
+            <thead>
+              <tr>
+                <th>Subscriber</th>
+                <th>Unit</th>
+                <th>IDA index</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span className="table-subscriber-address">
+                    0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                  </span>
+                </td>
+                <td>Germany</td>
+                <td>#34567</td>
+              </tr>
+              <tr>
+                <td>
+                  <span className="table-subscriber-address">
+                    0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
+                  </span>
+                </td>
+                <td>Mexico</td>
+                <td>#34567</td>
+              </tr>
+            </tbody>
+            <tfoot></tfoot>
           </table>
         </div>
         <div className="subscriber-add-btn">

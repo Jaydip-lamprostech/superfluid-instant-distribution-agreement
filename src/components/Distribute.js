@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import "../styles/distribute.scss";
+import Blokies from "./Blokies";
 
 function Distribute() {
   const [indexValue, setIndexValue] = useState("");
@@ -79,19 +80,23 @@ function Distribute() {
           <input
             type="text"
             className="subscriber-input-index"
-            placeholder="Subscriber Address"
+            placeholder="Subscriber Address"   
           />
         </div> */}
         {/* <h3>Unit</h3> */}
-        {/* <div className="subscriber-input-div">
+        <div className="subscriber-input-div">
           <input
-            type="text"
+            type="number"
             className="subscriber-input-index"
-            placeholder="Unit"
+            placeholder="Enter Token"
           />
-        </div> */}
+        </div>
         <h2 className="distribute-h2">Subscribers</h2>
-        <div className="distribute-subscribers-list"></div>
+        <div className="distribute-subscribers-list">
+          <div className="inside-subscriber-list">
+            <Blokies />
+          </div>
+        </div>
         <div className="distribute-btn">
           <button>Distribute</button>
         </div>
