@@ -32,51 +32,53 @@ function Distribute() {
           and distributes them to all receivers
         </p>
         <div className="distribute-box">
-          <FormControl required fullWidth>
-            {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
-            <Select
-              displayEmpty
-              id="demo-simple-select"
-              value={indexValue}
-              onChange={handleChange}
-              sx={{
-                margin: "10px 0px",
-                color: "rgba(18, 20, 30, 0.87)",
-                fontSize: "1rem",
-                padding: "0px 5px",
-                ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-                  {
-                    minHeight: "auto",
+          <div className="distribution-select-index">
+            <FormControl required fullWidth>
+              {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+              <Select
+                displayEmpty
+                id="demo-simple-select"
+                value={indexValue}
+                onChange={handleChange}
+                sx={{
+                  margin: "10px 0px",
+                  color: "rgba(18, 20, 30, 0.87)",
+                  fontSize: "1rem",
+                  padding: "0px 5px",
+                  ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
+                    {
+                      minHeight: "auto",
+                    },
+                  ".MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(224, 224, 224)",
+                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                    borderRadius: "15px",
                   },
-                ".MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgb(224, 224, 224)",
-                  boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                  borderRadius: "15px",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgb(224, 224, 224)",
-                  boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                  borderRadius: "15px",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgb(224, 224, 224)",
-                  boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                  borderRadius: "15px",
-                },
-                ".MuiSvgIcon-root ": {
-                  fill: "black",
-                },
-              }}
-              inputProps={{ "aria-label": "Without label" }}
-            >
-              <MenuItem disabled value="">
-                <h4 className="index-placeholder">Select Index</h4>
-              </MenuItem>
-              <MenuItem value={45152}>#45152</MenuItem>
-              <MenuItem value={85698}>#85698</MenuItem>
-              <MenuItem value={95679}>#95679</MenuItem>
-            </Select>
-          </FormControl>
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(224, 224, 224)",
+                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                    borderRadius: "15px",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(224, 224, 224)",
+                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                    borderRadius: "15px",
+                  },
+                  ".MuiSvgIcon-root ": {
+                    fill: "black",
+                  },
+                }}
+                inputProps={{ "aria-label": "Without label" }}
+              >
+                <MenuItem disabled value="">
+                  <h4 className="index-placeholder">Select Index</h4>
+                </MenuItem>
+                <MenuItem value={45152}>#45152</MenuItem>
+                <MenuItem value={85698}>#85698</MenuItem>
+                <MenuItem value={95679}>#95679</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
           {/* <h3>Subscriber Address</h3> */}
           {/* <div className="subscriber-input-div">
           <input

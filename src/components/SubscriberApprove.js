@@ -1,12 +1,6 @@
-import React, { useState } from "react";
-import { FormControl, MenuItem, Select } from "@mui/material";
+import React from "react";
 
 function SubscriberApprove() {
-  const [indexValue, setIndexValue] = useState("");
-
-  const handleChange = (e) => {
-    setIndexValue(e.target.value);
-  };
   return (
     <div className="db-sub">
       {/* <div className="go-back-btn">
