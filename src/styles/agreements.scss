@@ -44,6 +44,8 @@
         justify-content: space-between;
         align-items: center;
         margin: 10px 0px;
+        padding: 0px 20px;
+        // width: 80%;
 
         .agreement-number-span {
           color: #12141e99;
@@ -65,10 +67,11 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        margin-top: 30px;
+        margin-top: 15px;
+
         button {
           cursor: pointer;
-          padding: 15px 40px;
+          padding: 10px 20px;
           font-size: 1rem;
           font-weight: 600;
           box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
@@ -100,8 +103,9 @@
       table {
         width: 100%;
         margin: 10px 0px;
+        border-spacing: 0 1em;
         th {
-          padding: 20px 0px;
+          padding: 10px 0px;
           margin: 0px 0px 8px;
           font-size: 1.1rem;
           font-weight: 500;
@@ -127,11 +131,10 @@
             -webkit-box-align: center;
             align-items: center;
             -webkit-box-pack: center;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 12px;
             padding: 0px;
             height: max-content;
-            pointer-events: none;
 
             button {
               outline: 0px;

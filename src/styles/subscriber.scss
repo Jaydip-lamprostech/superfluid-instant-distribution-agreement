@@ -154,7 +154,7 @@
       td {
         border: 1px solid #8292ad0a;
         text-align: center;
-        padding: 10px;
+        padding: 20px;
       }
       td:nth-of-type(1) {
         text-align: left;
@@ -223,11 +223,10 @@
   -webkit-box-align: center;
   align-items: center;
   -webkit-box-pack: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 12px;
   padding: 0px;
   height: max-content;
-  pointer-events: none;
 
   button {
     outline: 0px;
@@ -275,4 +274,9 @@
       fill: rgb(210, 37, 37);
     }
   }
+}
+.subscribers-list-index-input {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }

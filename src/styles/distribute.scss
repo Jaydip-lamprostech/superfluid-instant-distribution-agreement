@@ -82,6 +82,8 @@
     h2.distribute-h2 {
       color: #10bb35ff;
       margin-top: 50px;
+      font-weight: 600;
+      line-height: 1.235;
     }
     .distribute-subscribers-list {
       margin-top: 20px;
@@ -92,8 +94,9 @@
 
       table {
         width: 100%;
+        border-spacing: 0 1em;
         th {
-          padding: 20px 0px;
+          padding: 10px 0px;
           margin: 0px 0px 8px;
           font-size: 1.2rem;
           font-weight: 500;
@@ -106,7 +109,7 @@
         td {
           // border: 1px solid #8292ad0a;
           text-align: center;
-          padding: 28px;
+          padding: 20px;
           font-weight: 500;
         }
         tbody {
