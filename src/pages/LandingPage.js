@@ -151,18 +151,20 @@ function LandingPage() {
         </ul>
       </div>
       <div className="main-right">
-        <header className="right-header">
-          <ConnectButton
-            accountStatus={{
-              smallScreen: "avatar",
-              largeScreen: "full",
-            }}
-            showBalance={{
-              smallScreen: false,
-              largeScreen: true,
-            }}
-          />
-        </header>
+        <div className="right-header-parent">
+          <header className="right-header">
+            <ConnectButton
+              accountStatus={{
+                smallScreen: "avatar",
+                largeScreen: "full",
+              }}
+              showBalance={{
+                smallScreen: false,
+                largeScreen: true,
+              }}
+            />
+          </header>
+        </div>
         <div className="inside-main-right">
           {showDashboard ? (
             <Dashboard />

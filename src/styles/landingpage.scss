@@ -128,17 +128,25 @@
     padding-left: 260px;
     padding-right: 16px;
 
-    header {
+    .right-header-parent {
+      background-color: white;
       width: 100%;
-      padding: 20px 32px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
+      height: 10vh;
+      padding: 20px 32px 20px 260px;
+      z-index: 1;
       position: fixed;
       top: 0;
       right: 0;
-      background-color: white;
-      // border-bottom: 1px solid #f3f4f6;
+      border-bottom: 1px solid #f3f4f6;
+
+      header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        background-color: white;
+        // border-bottom: 1px solid #f3f4f6;
+      }
     }
   }
 }

@@ -6,7 +6,7 @@
   display: block;
   padding-left: 16px;
   padding-right: 16px;
-  margin-top: 10vh;
+  margin-top: 15vh;
 
   .db-sub {
     display: flex;
@@ -102,6 +102,8 @@
 
         .db-header {
           margin: 10px 0px;
+          height: 10vh;
+          max-height: 10vh;
 
           .connect-wallet {
             max-width: none;
