@@ -65,6 +65,7 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
+        margin-top: 30px;
         button {
           cursor: pointer;
           padding: 15px 40px;
@@ -100,7 +101,7 @@
         width: 100%;
         margin: 10px 0px;
         th {
-          padding: 10px 0px;
+          padding: 20px 0px;
           margin: 0px 0px 8px;
           font-size: 1.1rem;
           font-weight: 500;
@@ -119,7 +120,69 @@
           // border: 1px solid #8292ad0a;
           text-align: center;
           padding: 20px;
+
+          .edit-delete-buttons {
+            display: flex;
+            flex-direction: row;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 0px;
+            height: max-content;
+            pointer-events: none;
+
+            button {
+              outline: 0px;
+              border: 0px;
+              margin: 0px;
+              cursor: pointer;
+              user-select: none;
+              vertical-align: middle;
+              appearance: none;
+              text-decoration: none;
+              text-align: center;
+              flex: 0 0 auto;
+              overflow: visible;
+              transition: background-color 150ms cubic-bezier(0.55, 0, 0.1, 1)
+                0ms;
+              border-radius: 8px;
+              padding: 6px;
+
+              svg {
+                user-select: none;
+                width: 1em;
+                height: 1em;
+                display: inline-block;
+
+                -webkit-flex-shrink: 0;
+                -ms-flex-negative: 0;
+                flex-shrink: 0;
+                -webkit-transition: fill 200ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
+                transition: fill 200ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
+                font-size: 1.5rem;
+              }
+            }
+            button.edit-subscriber-button {
+              color: rgb(16, 187, 53);
+              background-color: rgba(16, 187, 53, 0.08);
+
+              svg {
+                fill: #10bb35;
+              }
+            }
+            button.delete-subscriber-button {
+              color: rgb(210, 37, 37);
+              background-color: rgba(210, 37, 37, 0.08);
+
+              svg {
+                fill: rgb(210, 37, 37);
+              }
+            }
+          }
         }
+
         tbody {
           tr {
             box-shadow: rgba(204, 204, 204, 0.25) 0px 0px 6px 3px;
