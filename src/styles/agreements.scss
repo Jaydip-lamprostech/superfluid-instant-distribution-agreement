@@ -98,7 +98,7 @@
     }
     .agreement-subscribers {
       max-width: 100%;
-      // width: 100%;
+      width: 100%;
       // margin: 0 auto;
       table {
         width: 100%;
@@ -204,6 +204,7 @@
         // }
 
         .blokies-and-address {
+          max-width: 100%;
           display: flex;
           justify-content: flex-start;
           align-items: center;

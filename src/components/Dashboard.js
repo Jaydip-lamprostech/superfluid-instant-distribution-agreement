@@ -1,15 +1,53 @@
 import { Skeleton } from "@mui/material";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import React, { useState } from "react";
-import { useAccount } from "wagmi";
+import React, { useEffect, useState } from "react";
+import { useAccount, useSigner } from "wagmi";
+import { Framework } from "@superfluid-finance/sdk-core";
+import Abi_IDA from "../artifacts/Abi_IDA.json";
+import { CONTRACT_ADDRESS } from "../config";
 
 import "../styles/dashboard.scss";
+import { useProvider } from "wagmi";
+import { ethers } from "ethers";
 
 function Dashboard() {
   const { address, isConnected } = useAccount();
   const [loading, setLoading] = useState(false);
-  const [balance, setBalance] = useState();
+  const [tokenBalance, setTokenBalance] = useState();
+
+  const provider = useProvider();
+  const { data: signer } = useSigner();
+
+  const connectedContract = new ethers.Contract(
+    CONTRACT_ADDRESS,
+    Abi_IDA,
+    provider
+  );
+
   console.log(address);
+
+  const getBalance = async () => {
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    const daix = await sf.loadSuperToken("fDAIx");
+    console.log("fDAIx balance...");
+    try {
+      const daixBalance = await daix.balanceOf({
+        account: address,
+        providerOrSigner: signer,
+      });
+      console.log(daixBalance);
+      setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getBalance();
+  });
 
   if (isConnected) {
     return (
@@ -135,7 +173,17 @@ function Dashboard() {
                         </div>
                       </td>
                       <td>
-                        <h4 className="token-balance">1000</h4>
+                        {tokenBalance >= 0 ? (
+                          <h4 className="token-balance">{tokenBalance}</h4>
+                        ) : (
+                          <h4 className="token-balance">
+                            <Skeleton
+                              animation="wave"
+                              variant="rounded"
+                              sx={{ bgcolor: "grey.100" }}
+                            />
+                          </h4>
+                        )}
                       </td>
                       <td>-</td>
                       <td>-</td>
