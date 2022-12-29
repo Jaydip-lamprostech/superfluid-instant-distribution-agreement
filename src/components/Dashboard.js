@@ -8,7 +8,9 @@ import "../styles/dashboard.scss";
 function Dashboard() {
   const { address, isConnected } = useAccount();
   const [loading, setLoading] = useState(false);
+  const [balance, setBalance] = useState();
   console.log(address);
+
   if (isConnected) {
     return (
       <div className="db-main">

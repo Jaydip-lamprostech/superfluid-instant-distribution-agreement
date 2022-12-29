@@ -1,0 +1,20 @@
+.edit-subscriber-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  button.edit-subscriber-title {
+    // align-self: flex-start;
+    pointer-events: none;
+    padding: 10px 20px;
+    color: #10bb35;
+    background-color: rgba(16, 187, 53, 0.08);
+    border: none;
+    border-radius: 10px;
+    box-shadow: none;
+    line-height: 1.275;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
