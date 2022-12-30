@@ -35,7 +35,7 @@ function Dashboard() {
     console.log("fDAIx balance...");
     try {
       const daixBalance = await daix.balanceOf({
-        account: address,
+        account: connectedContract.address,
         providerOrSigner: signer,
       });
       console.log(daixBalance);

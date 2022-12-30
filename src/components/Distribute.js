@@ -1,15 +1,148 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import "../styles/distribute.scss";
 import Blokies from "./Blokies";
 
+import Abi_IDA from "../artifacts/Abi_IDA.json";
+import { ethers } from "ethers";
+import { Framework } from "@superfluid-finance/sdk-core";
+import { useAccount, useProvider, useSigner } from "wagmi";
+import { CONTRACT_ADDRESS } from "../config";
+
 function Distribute() {
+  const { address } = useAccount();
+
   const [indexValue, setIndexValue] = useState("");
   const [amount, setAmount] = useState();
+  const [dataloaded, setDataLoaded] = useState(false);
+  const [subscribersAddress, setSubscriberAddress] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalUnits, setTotalUnits] = useState(0);
+  // let totalUnits = 0;
+  const [totalUnitsArr, setTotalUnitsArr] = useState([]);
+
+  // let totalUnits = 0;
+
+  const [indexArr, setIndexArr] = useState([]);
 
   const handleChange = (e) => {
     setIndexValue(e.target.value);
   };
+
+  const provider = useProvider();
+  const { data: signer } = useSigner();
+
+  const connectedContract = new ethers.Contract(
+    CONTRACT_ADDRESS,
+    Abi_IDA,
+    signer
+  );
+
+  const distribute = async () => {
+    try {
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const connectedContract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      Abi_IDA,
+      signer
+    );
+    const getIndex = async () => {
+      try {
+        const tx = await connectedContract.viewAddressIndex(address);
+        console.log(tx);
+        console.log(parseInt(tx[0]));
+        if (tx.length > indexArr.length)
+          tx.map((item, key) => {
+            indexArr.push(parseInt(item));
+            setDataLoaded(true);
+            return null;
+          });
+        console.log(indexArr);
+        const receipt = await tx.wait();
+        // console.log(receipt);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getIndex();
+  });
+
+  useEffect(() => {
+    const connectedContract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      Abi_IDA,
+      signer
+    );
+    const viewSubscribers = async () => {
+      try {
+        const tx = await connectedContract.viewIndexSubscribers(indexValue);
+        console.log(tx);
+        if (tx.length > subscribersAddress.length)
+          tx.map((item, key) => {
+            subscribersAddress.push(item);
+            return null;
+          });
+        // console.log(indexArr);
+        const receipt = await tx.wait();
+        console.log(receipt);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    viewSubscribers();
+  }, [indexValue, signer, subscribersAddress]);
+
+  const getSubscriberUnits = async () => {
+    console.log(address);
+    console.log(signer);
+    console.log(indexValue);
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    //daix token loading
+    const daix = await sf.loadSuperToken("fDAIx");
+
+    for (let i = 0; i < subscribersAddress.length; i++) {
+      console.log(subscribersAddress[i]);
+      const getSub = await daix.getSubscription({
+        publisher: connectedContract.address,
+        indexId: indexValue,
+        subscriber: subscribersAddress[i],
+        providerOrSigner: signer,
+      });
+      console.log(getSub);
+      // totalUnits += parseInt(getSub.units);
+      // let tempUnit = parseFloat(getSub.units);
+      totalUnitsArr.push(parseInt(getSub.units));
+      // console.log(tempUnit);
+      // setTotalUnits(totalUnits + tempUnit);
+      console.log(totalUnitsArr);
+
+      subscribersAddress[i] = {
+        address: subscribersAddress[i],
+        units: getSub.units,
+      };
+    }
+    let sum = 0;
+    totalUnitsArr.forEach((item) => {
+      sum += item;
+    });
+    setTotalUnits(sum);
+    console.log(totalUnits);
+    console.log(subscribersAddress);
+    console.log(loading);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (indexValue > 0) getSubscriberUnits();
+  }, [indexValue]);
 
   return (
     <div className="db-main">
@@ -73,9 +206,15 @@ function Distribute() {
                 <MenuItem disabled value="">
                   <h4 className="index-placeholder">Select Index</h4>
                 </MenuItem>
-                <MenuItem value={45152}>#45152</MenuItem>
-                <MenuItem value={85698}>#85698</MenuItem>
-                <MenuItem value={95679}>#95679</MenuItem>
+                {dataloaded
+                  ? indexArr.map((item, key) => {
+                      return (
+                        <MenuItem value={item} key={key}>
+                          {item}
+                        </MenuItem>
+                      );
+                    })
+                  : null}
               </Select>
             </FormControl>
           </div>
@@ -108,35 +247,33 @@ function Distribute() {
               </thead>
               <tbody>
                 {/* ******** table data map ********** */}
-                <tr>
-                  <td>
-                    <div className="blokies-and-address">
-                      <Blokies />
-                      <span className="subscriber-address">
-                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                      </span>
-                    </div>
-                  </td>
-                  <td>10</td>
-                  <td>
-                    {amount ? parseFloat((amount / 15) * 10).toFixed(2) : "-"}
-                  </td>
-                </tr>
+                {!loading
+                  ? subscribersAddress.map((item, key) => {
+                      return (
+                        <tr key={key}>
+                          <td>
+                            <div className="blokies-and-address">
+                              <Blokies />
+                              <span className="subscriber-address">
+                                {item.address}
+                              </span>
+                            </div>
+                          </td>
+                          <td>{item.units}</td>
+                          <td>
+                            {/* {totalUnits} */}
+                            {amount
+                              ? parseFloat(
+                                  (amount / totalUnits) * item.units
+                                ).toFixed(2)
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  : null}
                 {/* ******** table data map ********** */}
-                <tr>
-                  <td>
-                    <div className="blokies-and-address">
-                      <Blokies />
-                      <span className="subscriber-address">
-                        0xeB88DDaEdA2261298F1b740137B2ae35aA42A975
-                      </span>
-                    </div>
-                  </td>
-                  <td>5</td>
-                  <td>
-                    {amount ? parseFloat((amount / 15) * 5).toFixed(2) : "-"}
-                  </td>
-                </tr>
+
                 {/* ******** table data map ********** */}
               </tbody>
             </table>
