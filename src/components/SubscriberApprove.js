@@ -65,7 +65,7 @@ function SubscriberApprove() {
       <div className="subscriber-add-box">
         <div className="subscriber-input-div">
           <input
-            type="text"
+            type="number"
             className="subscriber-input-index"
             placeholder="Index"
             onChange={(e) => setIndexNumber(e.target.value)}

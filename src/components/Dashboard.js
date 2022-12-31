@@ -15,16 +15,40 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState();
 
+  const [weiToken, setWeiToken] = useState("1000000000000000000000");
+
   const provider = useProvider();
   const { data: signer } = useSigner();
 
   const connectedContract = new ethers.Contract(
     CONTRACT_ADDRESS,
     Abi_IDA,
-    provider
+    signer
   );
 
+  const AddFunds = async () => {
+    try {
+      const tx = await connectedContract.gainFdaix(weiToken);
+      console.log(tx);
+      console.log(parseInt(tx[0]));
+
+      const receipt = await tx.wait();
+      console.log(receipt);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   console.log(address);
+
+  const getFunds = async () => {
+    try {
+      const tx = await connectedContract.viewAddressStake();
+      console.log(tx);
+      setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getBalance = async () => {
     const sf = await Framework.create({
@@ -46,7 +70,8 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    getBalance();
+    // getBalance();
+    getFunds();
   });
 
   if (isConnected) {
@@ -67,6 +92,7 @@ function Dashboard() {
               )}
             </h1>
             <div className="db-box">
+              <button onClick={() => AddFunds()}>Add 1000 Wei</button>
               <div className="db-header">
                 <div className="connect-wallet">
                   <ConnectButton

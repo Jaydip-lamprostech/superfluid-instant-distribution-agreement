@@ -61,6 +61,11 @@
         "internalType": "uint32",
         "name": "_indexId",
         "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
       }
     ],
     "name": "distribute",
@@ -69,8 +74,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "gainDaiX",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "gainFdaix",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -148,6 +159,25 @@
       }
     ],
     "name": "addressToIndexIdMapping",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "addressToStakeMapping",
     "outputs": [
       {
         "internalType": "uint256",
@@ -314,7 +344,33 @@
   },
   {
     "inputs": [],
+    "name": "viewAddressStake",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "viewBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "viewBalanceOfContract",
     "outputs": [
       {
         "internalType": "uint256",

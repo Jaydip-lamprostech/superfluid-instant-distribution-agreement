@@ -17,6 +17,7 @@ function Distribute() {
   const [dataloaded, setDataLoaded] = useState(false);
   const [subscribersAddress, setSubscriberAddress] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [maxToken, setMaxToken] = useState();
   const [totalUnits, setTotalUnits] = useState(0);
   // let totalUnits = 0;
   const [totalUnitsArr, setTotalUnitsArr] = useState([]);
@@ -40,11 +41,21 @@ function Distribute() {
 
   const distribute = async () => {
     try {
+      const tx = await connectedContract.distribute(indexValue, amount);
+      console.log(tx);
     } catch (err) {
       console.log(err);
     }
   };
-
+  const getFunds = async () => {
+    try {
+      const tx = await connectedContract.viewAddressStake();
+      console.log(tx);
+      setMaxToken(parseFloat(tx / Math.pow(10, 18)).toFixed(2));
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
     const connectedContract = new ethers.Contract(
       CONTRACT_ADDRESS,
@@ -144,148 +155,137 @@ function Distribute() {
     if (indexValue > 0) getSubscriberUnits();
   }, [indexValue]);
 
-  return (
-    <div className="db-main">
-      <div className="db-sub">
-        {/* <div className="go-back-btn">
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  height="36px"
-  viewBox="0 0 24 24"
-  width="36px"
-  fill="#000000"
->
-  <path d="M0 0h24v24H0V0z" fill="none" />
-  <path d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" />
-</svg>
-</div> */}
-        <h1 className="distribute-h1">Distribute</h1>
-        <p className="distribute-p">
-          Takes the specified amount of Super Tokens from the sender's account
-          and distributes them to all receivers
-        </p>
-        <div className="distribute-box">
-          <div className="distribution-select-index">
-            <FormControl required fullWidth>
-              {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
-              <Select
-                displayEmpty
-                id="demo-simple-select"
-                value={indexValue}
-                onChange={handleChange}
-                sx={{
-                  margin: "10px 0px",
-                  color: "rgba(18, 20, 30, 0.87)",
-                  fontSize: "1rem",
-                  padding: "0px 5px",
-                  ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-                    {
-                      minHeight: "auto",
-                    },
-                  ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgb(224, 224, 224)",
-                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                    borderRadius: "15px",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgb(224, 224, 224)",
-                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                    borderRadius: "15px",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgb(224, 224, 224)",
-                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                    borderRadius: "15px",
-                  },
-                  ".MuiSvgIcon-root ": {
-                    fill: "black",
-                  },
-                }}
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                <MenuItem disabled value="">
-                  <h4 className="index-placeholder">Select Index</h4>
-                </MenuItem>
-                {dataloaded
-                  ? indexArr.map((item, key) => {
-                      return (
-                        <MenuItem value={item} key={key}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })
-                  : null}
-              </Select>
-            </FormControl>
-          </div>
-          {/* <h3>Subscriber Address</h3> */}
-          {/* <div className="subscriber-input-div">
-          <input
-            type="text"
-            className="subscriber-input-index"
-            placeholder="Subscriber Address"   
-          />
-        </div> */}
-          {/* <h3>Unit</h3> */}
-          <div className="subscriber-input-div">
-            <input
-              type="number"
-              className="subscriber-input-index"
-              placeholder="Enter Token"
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <h2 className="distribute-h2">Distribution</h2>
-          <div className="distribute-subscribers-list">
-            <table>
-              <thead>
-                <tr>
-                  <th>Subscribers</th>
-                  <th>Units</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* ******** table data map ********** */}
-                {!loading
-                  ? subscribersAddress.map((item, key) => {
-                      return (
-                        <tr key={key}>
-                          <td>
-                            <div className="blokies-and-address">
-                              <Blokies />
-                              <span className="subscriber-address">
-                                {item.address}
-                              </span>
-                            </div>
-                          </td>
-                          <td>{item.units}</td>
-                          <td>
-                            {/* {totalUnits} */}
-                            {amount
-                              ? parseFloat(
-                                  (amount / totalUnits) * item.units
-                                ).toFixed(2)
-                              : "-"}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  : null}
-                {/* ******** table data map ********** */}
+  useEffect(() => {
+    getFunds();
+  });
 
-                {/* ******** table data map ********** */}
-              </tbody>
-            </table>
-            <div className="inside-subscriber-list"></div>
-          </div>
-          <div className="distribute-btn">
-            <button>Distribute</button>
+  if (maxToken)
+    return (
+      <div className="db-main">
+        <div className="db-sub">
+          <h1 className="distribute-h1">Distribute</h1>
+          <p className="distribute-p">
+            Takes the specified amount of Super Tokens from the sender's account
+            and distributes them to all receivers
+          </p>
+          <div className="distribute-box">
+            <div className="distribution-select-index">
+              <FormControl required fullWidth>
+                {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+                <Select
+                  displayEmpty
+                  id="demo-simple-select"
+                  value={indexValue}
+                  onChange={handleChange}
+                  sx={{
+                    margin: "10px 0px",
+                    color: "rgba(18, 20, 30, 0.87)",
+                    fontSize: "1rem",
+                    padding: "0px 5px",
+                    ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
+                      {
+                        minHeight: "auto",
+                      },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgb(224, 224, 224)",
+                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                      borderRadius: "15px",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgb(224, 224, 224)",
+                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                      borderRadius: "15px",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgb(224, 224, 224)",
+                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                      borderRadius: "15px",
+                    },
+                    ".MuiSvgIcon-root ": {
+                      fill: "black",
+                    },
+                  }}
+                  inputProps={{ "aria-label": "Without label" }}
+                >
+                  <MenuItem disabled value="">
+                    <h4 className="index-placeholder">Select Index</h4>
+                  </MenuItem>
+                  {dataloaded
+                    ? indexArr.map((item, key) => {
+                        return (
+                          <MenuItem value={item} key={key}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })
+                    : null}
+                </Select>
+              </FormControl>
+            </div>
+
+            <div className="subscriber-input-div">
+              <input
+                type="number"
+                className="subscriber-input-index"
+                placeholder="Enter Token"
+                max={maxToken}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                }}
+              />
+            </div>
+            <h4>Token Balance: {maxToken} Wei</h4>
+            <h2 className="distribute-h2">Distribution</h2>
+            <div className="distribute-subscribers-list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Subscribers</th>
+                    <th>Units</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* ******** table data map ********** */}
+                  {!loading
+                    ? subscribersAddress.map((item, key) => {
+                        return (
+                          <tr key={key}>
+                            <td>
+                              <div className="blokies-and-address">
+                                <Blokies />
+                                <span className="subscriber-address">
+                                  {item.address}
+                                </span>
+                              </div>
+                            </td>
+                            <td>{item.units}</td>
+                            <td>
+                              {/* {totalUnits} */}
+                              {amount
+                                ? parseFloat(
+                                    (amount / totalUnits) * item.units
+                                  ).toFixed(2)
+                                : "-"}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    : null}
+                  {/* ******** table data map ********** */}
+
+                  {/* ******** table data map ********** */}
+                </tbody>
+              </table>
+              <div className="inside-subscriber-list"></div>
+            </div>
+            <div className="distribute-btn">
+              <button onClick={() => distribute()}>Distribute</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 }
 
 export default Distribute;
