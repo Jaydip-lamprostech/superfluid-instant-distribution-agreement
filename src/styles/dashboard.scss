@@ -83,7 +83,7 @@
       width: 100%;
       margin-left: auto;
       margin-right: auto;
-      margin-top: 32px;
+      // margin-top: 32px;
     }
     .db-box-parent {
       width: 100%;
@@ -234,4 +234,16 @@
   to {
     transform: rotate(359deg);
   }
+}
+
+button.add-fund-btn {
+  padding: 10px 20px;
+  background-color: #10bb35;
+  color: white;
+  box-shadow: none;
+  border: none;
+  margin: 20px;
+  margin-right: auto;
+  border-radius: 20px;
+  cursor: pointer;
 }

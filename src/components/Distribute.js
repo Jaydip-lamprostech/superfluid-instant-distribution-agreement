@@ -40,8 +40,10 @@ function Distribute() {
   );
 
   const distribute = async () => {
+    const amtToUpgrade = ethers.utils.parseEther(amount.toString());
+    console.log(amtToUpgrade);
     try {
-      const tx = await connectedContract.distribute(indexValue, amount);
+      const tx = await connectedContract.distribute(indexValue, amtToUpgrade);
       console.log(tx);
     } catch (err) {
       console.log(err);
@@ -227,7 +229,7 @@ function Distribute() {
               <input
                 type="number"
                 className="subscriber-input-index"
-                placeholder="Enter Token"
+                placeholder="Enter Token in ETH"
                 max={maxToken}
                 onChange={(e) => {
                   setAmount(e.target.value);

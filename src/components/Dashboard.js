@@ -92,7 +92,9 @@ function Dashboard() {
               )}
             </h1>
             <div className="db-box">
-              <button onClick={() => AddFunds()}>Add 1000 Wei</button>
+              <button className="add-fund-btn" onClick={() => AddFunds()}>
+                Add 1000 Wei
+              </button>
               <div className="db-header">
                 <div className="connect-wallet">
                   <ConnectButton
