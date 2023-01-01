@@ -4,10 +4,12 @@ import "../styles/ida.scss";
 
 import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { ethers } from "ethers";
-import { useProvider, useSigner } from "wagmi";
+import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function IDAIndex() {
+  const { isConnected } = useAccount();
   const provider = useProvider();
   const { data: signer } = useSigner();
 
@@ -40,11 +42,26 @@ function IDAIndex() {
         <div className="db-ida-box">
           <h1 className="ida-h1">Create IDA index</h1>
           <p className="ida-p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Consequatur, rem?
+            A channel made by a publisher account to distribute Super Tokens to
+            any amount of receivers on a proportional basis
           </p>
           <div className="ida-create-index-btn">
-            <button onClick={() => createIndex()}>Create Index</button>
+            {isConnected ? (
+              <button onClick={() => createIndex()}>Create Index</button>
+            ) : (
+              <div className="connect-wallet ">
+                <ConnectButton
+                  accountStatus={{
+                    smallScreen: "avatar",
+                    largeScreen: "full",
+                  }}
+                  showBalance={{
+                    smallScreen: false,
+                    largeScreen: true,
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

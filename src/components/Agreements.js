@@ -12,9 +12,10 @@ import { ethers } from "ethers";
 import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { CONTRACT_ADDRESS } from "../config";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function Agreements() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [indexValue, setIndexValue] = useState(0);
 
   const [indexArr, setIndexArr] = useState([]);
@@ -173,7 +174,33 @@ function Agreements() {
       console.log(err);
     }
   };
-
+  if (!isConnected)
+    return (
+      <div className="db-main">
+        <div className="db-sub">
+          <h1 className="agreements-h1">Instant Distribution Agreements</h1>
+          <p className="agreements-p">
+            List of all the IDAs with subscribers, Units(proportion) and Index
+            number.
+          </p>
+        </div>
+        <div
+          className="connect-wallet"
+          style={{ margin: "10px auto", width: "max-content" }}
+        >
+          <ConnectButton
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+            showBalance={{
+              smallScreen: false,
+              largeScreen: true,
+            }}
+          />
+        </div>
+      </div>
+    );
   return (
     <div className="db-main">
       <div className="db-sub">

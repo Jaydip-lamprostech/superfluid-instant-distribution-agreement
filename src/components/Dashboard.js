@@ -92,9 +92,6 @@ function Dashboard() {
               )}
             </h1>
             <div className="db-box">
-              <button className="add-fund-btn" onClick={() => AddFunds()}>
-                Add 1000 Wei
-              </button>
               <div className="db-header">
                 <div className="connect-wallet">
                   <ConnectButton
@@ -220,6 +217,9 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
+              <button className="add-fund-btn" onClick={() => AddFunds()}>
+                Add 1000 Wei
+              </button>
             </div>
           </div>
         </div>
@@ -237,35 +237,46 @@ function Dashboard() {
               sx={{ bgcolor: "grey.100" }}
             />
           ) : (
-            "Connect to Superfluid"
+            "Instant Distribution Agreement"
           )}
         </h1>
-        <p>Connect your wallet, view any wallet, or take a look around!</p>
+        <p>Connect your wallet</p>
         <div className="db-grid-sub">
           {loading ? (
             <Skeleton animation="wave" variant="rounded" height={"100%"} />
           ) : (
             <div className="grid-sub">
-              <span className="grid-sub-title">Get Super Tokens</span>
+              <span className="grid-sub-title">Create IDA Index</span>
               <span className="grid-sub-info">
-                Wrap any token in your wallet
+                A channel made by a publisher account to distribute Super Tokens
+                to any amount of receivers on a proportional basis
               </span>
             </div>
           )}
           <div className="grid-sub">
-            <span className="grid-sub-title">Get Super Tokens</span>
-            <span className="grid-sub-info">Wrap any token in your wallet</span>
+            <span className="grid-sub-title">Add Subscribers</span>
+            <span className="grid-sub-info">
+              The receivers. Accounts that are given units to an IDA index and
+              are able to receive Super Tokens distributed through it.
+            </span>
           </div>
           <div className="grid-sub">
-            <span className="grid-sub-title">Get Super Tokens</span>
-            <span className="grid-sub-info">Wrap any token in your wallet</span>
+            <span className="grid-sub-title">Set Units for Subscribers</span>
+            <span className="grid-sub-info">
+              Receivers get Super Tokens sent through the IDA index in
+              proportion to the units issued to them divided by total units
+              issued for the index.
+            </span>
           </div>
           <div className="grid-sub">
-            <span className="grid-sub-title">Get Super Tokens</span>
-            <span className="grid-sub-info">Wrap any token in your wallet</span>
+            <span className="grid-sub-title">Distribute Tokens</span>
+            <span className="grid-sub-info">
+              Takes the specified amount of Super Tokens from the sender's
+              account and distributes them to all receivers.
+            </span>
           </div>
         </div>
-        <div className="connect-wallet">
+        <div className="connect-wallet ">
           <ConnectButton
             accountStatus={{
               smallScreen: "avatar",

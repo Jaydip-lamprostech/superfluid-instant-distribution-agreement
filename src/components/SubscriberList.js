@@ -9,7 +9,7 @@ import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 
 function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [indexValue, setIndexValue] = useState(0);
 
   const [indexArr, setIndexArr] = useState([]);
@@ -122,7 +122,8 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
     <div className="db-sub">
       <h1 className="subscriber-h1">Subscribers</h1>
       <p className="subscriber-p">
-        List of all the subscribers with Unit(proportion) and Index number.
+        Select an index number and view all the subscribers with their
+        units(proportion) regarding that index only.
       </p>
       <div className="distribute-box">
         <div className="subscribers-list-index-input">

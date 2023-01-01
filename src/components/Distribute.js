@@ -8,9 +8,10 @@ import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function Distribute() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [indexValue, setIndexValue] = useState("");
   const [amount, setAmount] = useState();
@@ -285,6 +286,33 @@ function Distribute() {
               <button onClick={() => distribute()}>Distribute</button>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  else
+    return (
+      <div className="db-main">
+        <div className="db-sub">
+          <h1 className="distribute-h1">Distribute</h1>
+          <p className="distribute-p">
+            Takes the specified amount of Super Tokens from the sender's account
+            and distributes them to all receivers
+          </p>
+        </div>
+        <div
+          className="connect-wallet"
+          style={{ margin: "10px auto", width: "max-content" }}
+        >
+          <ConnectButton
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+            showBalance={{
+              smallScreen: false,
+              largeScreen: true,
+            }}
+          />
         </div>
       </div>
     );

@@ -5,10 +5,11 @@ import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { ethers } from "ethers";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function SubscriberAdd() {
   const [indexValue, setIndexValue] = useState("");
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [indexArr, setIndexArr] = useState([]);
   const [dataloaded, setDataLoaded] = useState(false);
   const [subscriberDetails, setSubscriberDetails] = useState({
@@ -89,8 +90,8 @@ function SubscriberAdd() {
   </div> */}
       <h1 className="subscriber-h1">Subscriber</h1>
       <p className="subscriber-p">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur,
-        rem?
+        Select index number which you have already created and enter recievers
+        address and their units.
       </p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>
@@ -173,7 +174,22 @@ function SubscriberAdd() {
           />
         </div>
         <div className="subscriber-add-btn">
-          <button onClick={() => addSubscriber()}>Add Subscriber</button>
+          {isConnected ? (
+            <button onClick={() => addSubscriber()}>Add Subscriber</button>
+          ) : (
+            <div className="connect-wallet ">
+              <ConnectButton
+                accountStatus={{
+                  smallScreen: "avatar",
+                  largeScreen: "full",
+                }}
+                showBalance={{
+                  smallScreen: false,
+                  largeScreen: true,
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
