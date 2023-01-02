@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Skeleton } from "@mui/material";
+
 import { FormControl, MenuItem, Select } from "@mui/material";
 import Blokies from "./Blokies";
 
@@ -15,7 +17,9 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
   const [indexArr, setIndexArr] = useState([]);
   const [subscribersAddress, setSubscriberAddress] = useState([]);
   const [dataloaded, setDataLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [subChange, setSubChange] = useState(0);
+  const [subListLoading, setSubListLoading] = useState(false);
+  const [subUnitsLoading, setSubUnitsLoading] = useState(false);
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   // const [amount, setAmount] = useState();
@@ -42,22 +46,28 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
       signer
     );
     const viewSubscribers = async () => {
+      setSubListLoading(true);
+      subscribersAddress.splice(0, subscribersAddress.length);
       try {
         const tx = await connectedContract.viewIndexSubscribers(indexValue);
         console.log(tx);
+        setSubChange(1);
         if (tx.length > subscribersAddress.length)
           tx.map((item, key) => {
             subscribersAddress.push(item);
             return null;
           });
         // console.log(indexArr);
-        const receipt = await tx.wait();
-        console.log(receipt);
+        await tx.wait();
+        setSubListLoading(false);
+        // console.log(receipt);
       } catch (error) {
         console.log(error);
+        setSubListLoading(false);
       }
     };
     viewSubscribers();
+    getSubscriberUnits();
   }, [indexValue]);
 
   useEffect(() => {
@@ -88,9 +98,10 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
   });
 
   const getSubscriberUnits = async () => {
-    console.log(address);
-    console.log(signer);
-    console.log(indexValue);
+    setSubUnitsLoading(true);
+    // console.log(address);
+    // console.log(signer);
+    // console.log(indexValue);
     const sf = await Framework.create({
       chainId: 5,
       provider: provider,
@@ -111,14 +122,15 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
         units: getSub.units,
       };
     }
-    console.log(subscribersAddress);
-    console.log(loading);
-    setLoading(true);
+    setSubUnitsLoading(false);
+    // console.log(subscribersAddress);
+    // console.log(loading);
+    // setLoading(true);
   };
 
-  useEffect(() => {
-    if (indexValue > 0) getSubscriberUnits();
-  }, [indexValue]);
+  // useEffect(() => {
+  //   getSubscriberUnits();
+  // }, [indexValue]);
 
   return (
     <div className="db-sub">
@@ -193,31 +205,56 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
         {loadingAnim ? (
           <span className="loader"></span>
         ) : (
-          <div className="distribute-subscribers-list">
-            <table>
-              <thead>
-                <tr>
-                  <th>Subscribers</th>
-                  <th>Units</th>
-                  <th>Edit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* ******** table data map ********** */}
+          <div style={{ width: "80%" }}>
+            <div className="distribute-subscribers-list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Subscribers</th>
+                    <th>Units</th>
+                    <th>Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* ******** table data map ********** */}
 
-                {loading
-                  ? subscribersAddress.map((item, key) => {
+                  {!subListLoading ? (
+                    subscribersAddress.map((item, key) => {
                       return (
                         <tr key={key}>
                           <td>
-                            <div className="blokies-and-address">
-                              <Blokies />
-                              <span className="subscriber-address">
-                                {item.address}
-                              </span>
-                            </div>
+                            {item.address ? (
+                              <div className="blokies-and-address">
+                                <Blokies />
+                                <span className="subscriber-address">
+                                  {/* {item.address} */}
+                                  {item.address.substring(0, 8) +
+                                    "..." +
+                                    item.address.substring(
+                                      item.address.length - 6,
+                                      item.address.length
+                                    )}
+                                </span>
+                              </div>
+                            ) : (
+                              <Skeleton
+                                animation="wave"
+                                variant="rounded"
+                                sx={{ bgcolor: "grey.100" }}
+                              />
+                            )}
                           </td>
-                          <td>{item.units}</td>
+                          <td>
+                            {item.units ? (
+                              item.units
+                            ) : (
+                              <Skeleton
+                                animation="wave"
+                                variant="rounded"
+                                sx={{ bgcolor: "grey.100" }}
+                              />
+                            )}
+                          </td>
                           <td>
                             <div className="edit-delete-buttons">
                               <button className="edit-subscriber-button">
@@ -253,10 +290,34 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
                         </tr>
                       );
                     })
-                  : null}
+                  ) : (
+                    <tr>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                    </tr>
+                  )}
 
-                {/* ******** table data map ********** */}
-                {/* <tr>
+                  {/* ******** table data map ********** */}
+                  {/* <tr>
                 <td>
                   <div className="blokies-and-address">
                     <Blokies />
@@ -295,10 +356,11 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
                   </div>
                 </td>
               </tr> */}
-                {/* ******** table data map ********** */}
-              </tbody>
-            </table>
-            <div className="inside-subscriber-list"></div>
+                  {/* ******** table data map ********** */}
+                </tbody>
+              </table>
+              <div className="inside-subscriber-list"></div>
+            </div>
           </div>
         )}
         {/* <div className="distribute-btn">

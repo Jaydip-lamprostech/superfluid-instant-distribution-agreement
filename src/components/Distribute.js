@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Skeleton } from "@mui/material";
+
 import { FormControl, MenuItem, Select } from "@mui/material";
 import "../styles/distribute.scss";
 import Blokies from "./Blokies";
@@ -77,7 +79,7 @@ function Distribute() {
             return null;
           });
         console.log(indexArr);
-        const receipt = await tx.wait();
+        // const receipt = await tx.wait();
         // console.log(receipt);
       } catch (error) {
         console.log(error);
@@ -93,6 +95,8 @@ function Distribute() {
       signer
     );
     const viewSubscribers = async () => {
+      setLoading(true);
+      subscribersAddress.splice(0, subscribersAddress.length);
       try {
         const tx = await connectedContract.viewIndexSubscribers(indexValue);
         console.log(tx);
@@ -102,14 +106,18 @@ function Distribute() {
             return null;
           });
         // console.log(indexArr);
-        const receipt = await tx.wait();
-        console.log(receipt);
+        // await tx.wait();
+
+        // console.log(receipt);
       } catch (error) {
         console.log(error);
       }
     };
     viewSubscribers();
-  }, [indexValue, signer, subscribersAddress]);
+    // setLoading(false);
+
+    getSubscriberUnits();
+  }, [indexValue]);
 
   const getSubscriberUnits = async () => {
     console.log(address);
@@ -121,7 +129,7 @@ function Distribute() {
     });
     //daix token loading
     const daix = await sf.loadSuperToken("fDAIx");
-
+    totalUnitsArr.splice(0, totalUnitsArr.length);
     for (let i = 0; i < subscribersAddress.length; i++) {
       console.log(subscribersAddress[i]);
       const getSub = await daix.getSubscription({
@@ -133,7 +141,8 @@ function Distribute() {
       console.log(getSub);
       // totalUnits += parseInt(getSub.units);
       // let tempUnit = parseFloat(getSub.units);
-      totalUnitsArr.push(parseInt(getSub.units));
+      if (totalUnitsArr.length < subscribersAddress.length)
+        totalUnitsArr.push(parseInt(getSub.units));
       // console.log(tempUnit);
       // setTotalUnits(totalUnits + tempUnit);
       console.log(totalUnitsArr);
@@ -148,15 +157,15 @@ function Distribute() {
       sum += item;
     });
     setTotalUnits(sum);
+    setLoading(false);
     console.log(totalUnits);
     console.log(subscribersAddress);
     console.log(loading);
-    setLoading(false);
   };
 
-  useEffect(() => {
-    if (indexValue > 0) getSubscriberUnits();
-  }, [indexValue]);
+  // useEffect(() => {
+  //   if (indexValue > 0) getSubscriberUnits();
+  // }, [indexValue]);
 
   useEffect(() => {
     getFunds();
@@ -250,31 +259,63 @@ function Distribute() {
                 </thead>
                 <tbody>
                   {/* ******** table data map ********** */}
-                  {!loading
-                    ? subscribersAddress.map((item, key) => {
-                        return (
-                          <tr key={key}>
-                            <td>
+                  {!loading ? (
+                    subscribersAddress.map((item, key) => {
+                      return (
+                        <tr key={key}>
+                          <td>
+                            {item.address ? (
                               <div className="blokies-and-address">
                                 <Blokies />
                                 <span className="subscriber-address">
                                   {item.address}
                                 </span>
                               </div>
-                            </td>
-                            <td>{item.units}</td>
-                            <td>
-                              {/* {totalUnits} */}
-                              {amount
-                                ? parseFloat(
-                                    (amount / totalUnits) * item.units
-                                  ).toFixed(2)
-                                : "-"}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    : null}
+                            ) : (
+                              <Skeleton
+                                animation="wave"
+                                variant="rounded"
+                                sx={{ bgcolor: "grey.100" }}
+                              />
+                            )}
+                          </td>
+                          <td>{item.units}</td>
+                          <td>
+                            {/* {totalUnits} */}
+                            {amount
+                              ? parseFloat(
+                                  (amount / totalUnits) * item.units
+                                ).toFixed(2)
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                    </tr>
+                  )}
                   {/* ******** table data map ********** */}
 
                   {/* ******** table data map ********** */}

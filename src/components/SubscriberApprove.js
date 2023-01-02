@@ -11,6 +11,9 @@ function SubscriberApprove() {
   const { data: signer } = useSigner();
   const [indexNumber, setIndexNumber] = useState();
 
+  const [loadingAnim, setLoadingAnim] = useState(false);
+  const [btnContent, setBtnContent] = useState("Approve");
+
   const connectedContract = new ethers.Contract(
     CONTRACT_ADDRESS,
     Abi_IDA,
@@ -18,6 +21,7 @@ function SubscriberApprove() {
   );
 
   const approveSubscriber = async () => {
+    setLoadingAnim(true);
     const sf = await Framework.create({
       chainId: 5,
       provider: provider,
@@ -30,10 +34,16 @@ function SubscriberApprove() {
     });
     try {
       const tx = await subscribeOperation.exec(signer);
-      const receipt = await tx.wait();
-      if (receipt) {
-        console.log("approved!");
-      }
+      await tx.wait();
+      setLoadingAnim(false);
+      setBtnContent("Approved");
+      setTimeout(() => {
+        setIndexNumber("");
+        setBtnContent("Approve");
+      }, 3000);
+      // if (receipt) {
+      //   console.log("approved!");
+      // }
     } catch (err) {
       if (
         err.errorObject.errorObject.error.reason ===
@@ -73,7 +83,7 @@ function SubscriberApprove() {
           <input
             type="number"
             className="subscriber-input-index"
-            placeholder="Index"
+            placeholder="Enter Index Number"
             onChange={(e) => setIndexNumber(e.target.value)}
           />
         </div>
@@ -89,7 +99,9 @@ function SubscriberApprove() {
         {/* <h3>Unit</h3> */}
 
         <div className="subscriber-add-btn">
-          <button onClick={() => approveSubscriber()}>Approve</button>
+          <button onClick={() => approveSubscriber()}>
+            {loadingAnim ? <span className="loader"></span> : btnContent}
+          </button>
         </div>
       </div>
     </div>
