@@ -7,17 +7,17 @@ import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { CONTRACT_ADDRESS } from "../config";
 
 import "../styles/dashboard.scss";
-import { useProvider } from "wagmi";
+// import { useProvider } from "wagmi";
 import { ethers } from "ethers";
 
 function Dashboard() {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const [loading, setLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState();
 
-  const [weiToken, setWeiToken] = useState("1000000000000000000000");
+  const [weiToken] = useState("1000000000000000000000");
 
-  const provider = useProvider();
+  // const provider = useProvider();
   const { data: signer } = useSigner();
 
   const connectedContract = new ethers.Contract(
@@ -30,47 +30,45 @@ function Dashboard() {
     try {
       const tx = await connectedContract.gainFdaix(weiToken);
       console.log(tx);
-      console.log(parseInt(tx[0]));
+      // console.log(parseInt(tx[0]));
 
-      const receipt = await tx.wait();
-      console.log(receipt);
+      // const receipt = await tx.wait();
+      // console.log(receipt);
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(address);
 
-  const getFunds = async () => {
-    try {
-      const tx = await connectedContract.viewAddressStake();
-      console.log(tx);
-      setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const getBalance = async () => {
-    const sf = await Framework.create({
-      chainId: 5,
-      provider: provider,
-    });
-    const daix = await sf.loadSuperToken("fDAIx");
-    console.log("fDAIx balance...");
-    try {
-      const daixBalance = await daix.balanceOf({
-        account: connectedContract.address,
-        providerOrSigner: signer,
-      });
-      console.log(daixBalance);
-      setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const getBalance = async () => {
+  //   const sf = await Framework.create({
+  //     chainId: 5,
+  //     provider: provider,
+  //   });
+  //   const daix = await sf.loadSuperToken("fDAIx");
+  //   console.log("fDAIx balance...");
+  //   try {
+  //     const daixBalance = await daix.balanceOf({
+  //       account: connectedContract.address,
+  //       providerOrSigner: signer,
+  //     });
+  //     console.log(daixBalance);
+  //     setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
     // getBalance();
+    const getFunds = async () => {
+      try {
+        const tx = await connectedContract.viewAddressStake();
+        console.log(tx);
+        if (tx) setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
+      } catch (err) {
+        console.log(err);
+      }
+    };
     getFunds();
   });
 

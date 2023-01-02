@@ -22,7 +22,7 @@ function Agreements() {
   const [subscribersAddress, setSubscriberAddress] = useState([
     // { subscriber: [], sub_units: [] },
   ]);
-  const [dataloaded, setDataLoaded] = useState(false);
+  // const [dataloaded, setDataLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tokenBalance, setTokenBalance] = useState();
 
@@ -105,10 +105,10 @@ function Agreements() {
                     units: getSub.units,
                   });
                 // console.log(loading);
-                // setLoading(true);
               };
               getSubscriberUnits();
               ///
+
               return null;
             });
           }
@@ -118,6 +118,7 @@ function Agreements() {
         // console.log(receipt);
         // console.log("subscribers");
         console.log(subscribersAddress);
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -125,16 +126,26 @@ function Agreements() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    // viewSubscribers();
-  }, [indexValue, signer]);
+  // useEffect(() => {
+  //   // viewSubscribers();
+  // }, [indexValue, signer]);
 
   useEffect(() => {
+    // setLoading(true);
     const connectedContract = new ethers.Contract(
       CONTRACT_ADDRESS,
       Abi_IDA,
       signer
     );
+    const getFunds = async () => {
+      try {
+        const tx = await connectedContract.viewAddressStake();
+        // console.log(tx);
+        setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
+      } catch (err) {
+        console.log(err);
+      }
+    };
     const getIndex = async () => {
       try {
         const tx = await connectedContract.viewAddressIndex(address);
@@ -148,7 +159,7 @@ function Agreements() {
               subscriber: [],
               sub_units: [],
             });
-            setDataLoaded(true);
+
             return null;
           });
         console.log(indexArr);
@@ -157,11 +168,14 @@ function Agreements() {
       } catch (error) {
         console.log(error);
       }
+      // setLoading(true);
     };
     getIndex();
     viewSubscribers();
     getFunds();
-  }, []);
+
+    // return () => setLoading(true);
+  });
 
   // const getSubscriberUnits = async () => {
   //   // console.log("inside unit function");
@@ -196,22 +210,12 @@ function Agreements() {
   //   }
   //   console.log(subscribersAddress);
   //   // console.log(loading);
-  //   setLoading(true);
+  //
   // };
 
-  useEffect(() => {
-    // if (indexValue > 0) getSubscriberUnits();
-  }, [indexValue]);
-
-  const getFunds = async () => {
-    try {
-      const tx = await connectedContract.viewAddressStake();
-      // console.log(tx);
-      setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // useEffect(() => {
+  //   // if (indexValue > 0) getSubscriberUnits();
+  // }, [indexValue]);
 
   // }
 
@@ -242,18 +246,19 @@ function Agreements() {
         </div>
       </div>
     );
-  return (
-    <div className="db-main">
-      <div className="db-sub">
-        <h1 className="agreements-h1">Instant Distribution Agreements</h1>
-        <p className="agreements-p">
-          List of all the IDAs with subscribers, Units(proportion) and Index
-          number.
-        </p>
-        {/* ****************for mapping************** */}
+  if (!loading)
+    return (
+      <div className="db-main">
+        <div className="db-sub">
+          <h1 className="agreements-h1">Instant Distribution Agreements</h1>
+          <p className="agreements-p">
+            List of all the IDAs with subscribers, Units(proportion) and Index
+            number.
+          </p>
+          {/* ****************for mapping************** */}
 
-        {!loading
-          ? subscribersAddress.map((item, key) => {
+          {!loading &&
+            subscribersAddress.map((item, key) => {
               return (
                 <div className="agreement-box" key={key}>
                   {/* <h3>Subscriber Address</h3> */}
@@ -351,7 +356,7 @@ function Agreements() {
                       </table>
                     </div>
                     <div className="agreements-list-buttons">
-                      <button className="edit-agreement">Edit</button>
+                      {/* <button className="edit-agreement">Edit</button> */}
                       <button className="distribute-agreement">
                         Distribute
                       </button>
@@ -359,29 +364,28 @@ function Agreements() {
                   </div>
                 </div>
               );
-            })
-          : null}
-        {/* ****************for mapping************** */}
-        <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          open={open}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={open}>
-            <Box sx={style}>
-              <EditSubscriber editSubscriberData={editSubscriberData} />
-            </Box>
-          </Fade>
-        </Modal>
+            })}
+          {/* ****************for mapping************** */}
+          <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            open={open}
+            onClose={handleClose}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={open}>
+              <Box sx={style}>
+                <EditSubscriber editSubscriberData={editSubscriberData} />
+              </Box>
+            </Fade>
+          </Modal>
+        </div>
       </div>
-    </div>
-  );
+    );
 }
 
 export default Agreements;
