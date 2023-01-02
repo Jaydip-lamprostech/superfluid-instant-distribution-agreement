@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/dashboard.scss";
 import "../styles/ida.scss";
 
@@ -13,6 +13,9 @@ function IDAIndex() {
   const provider = useProvider();
   const { data: signer } = useSigner();
 
+  const [loadingAnim, setLoadingAnim] = useState(false);
+  const [btnContent, setBtnContent] = useState("Create Index");
+
   const connectedContract = new ethers.Contract(
     CONTRACT_ADDRESS,
     Abi_IDA,
@@ -24,16 +27,22 @@ function IDAIndex() {
   // fdaix address 0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00
 
   const createIndex = async () => {
+    setLoadingAnim(true);
     try {
       const tx = await connectedContract.createNewStream(
         "0x22ff293e14f1ec3a09b137e9e06084afd63addf9",
         "0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00"
       );
-      console.log(tx);
-      const receipt = await tx.wait();
-      console.log(receipt);
+      // console.log(tx);
+      await tx.wait();
+      setLoadingAnim(false);
+      setBtnContent("Index Created");
+      setTimeout(() => {
+        setBtnContent("Create Index");
+      }, 3000);
     } catch (error) {
       console.log(error);
+      setLoadingAnim(false);
     }
   };
   return (
@@ -45,9 +54,12 @@ function IDAIndex() {
             A channel made by a publisher account to distribute Super Tokens to
             any amount of receivers on a proportional basis
           </p>
-          <div className="ida-create-index-btn">
+          <div className="ida-create-index-btn" style={{ minWidth: "50px" }}>
             {isConnected ? (
-              <button onClick={() => createIndex()}>Create Index</button>
+              <button onClick={() => createIndex()}>
+                {" "}
+                {loadingAnim ? <span className="loader"></span> : btnContent}
+              </button>
             ) : (
               <div className="connect-wallet ">
                 <ConnectButton

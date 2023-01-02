@@ -16,6 +16,8 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
   const [subscribersAddress, setSubscriberAddress] = useState([]);
   const [dataloaded, setDataLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [loadingAnim, setLoadingAnim] = useState(false);
   // const [amount, setAmount] = useState();
 
   const handleChange = (e) => {
@@ -56,7 +58,7 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
       }
     };
     viewSubscribers();
-  }, [indexValue, signer]);
+  }, [indexValue]);
 
   useEffect(() => {
     const connectedContract = new ethers.Contract(
@@ -188,7 +190,9 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
           />
         </div> */}
         {/* <h3>Unit</h3> */}
-        {loading ? (
+        {loadingAnim ? (
+          <span className="loader"></span>
+        ) : (
           <div className="distribute-subscribers-list">
             <table>
               <thead>
@@ -296,7 +300,7 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
             </table>
             <div className="inside-subscriber-list"></div>
           </div>
-        ) : null}
+        )}
         {/* <div className="distribute-btn">
           <button>Distribute</button>
         </div> */}

@@ -12,10 +12,14 @@ function SubscriberAdd() {
   const { address, isConnected } = useAccount();
   const [indexArr, setIndexArr] = useState([]);
   const [dataloaded, setDataLoaded] = useState(false);
+
   const [subscriberDetails, setSubscriberDetails] = useState({
     address: "",
     units: 0,
   });
+
+  const [loadingAnim, setLoadingAnim] = useState(false);
+  const [btnContent, setBtnContent] = useState("Add Subscriber");
 
   const handleChange = (e) => {
     setIndexValue(e.target.value);
@@ -33,40 +37,42 @@ function SubscriberAdd() {
   const getIndex = async () => {
     try {
       const tx = await connectedContract.viewAddressIndex(address);
-      console.log(tx);
-      console.log(parseInt(tx[0]));
+      // console.log(tx);
+      // console.log(parseInt(tx[0]));
       if (tx.length > indexArr.length)
         tx.map((item, key) => {
           indexArr.push(parseInt(item));
           setDataLoaded(true);
           return null;
         });
-      console.log(indexArr);
-      const receipt = await tx.wait();
-      console.log(receipt);
+      // console.log(indexArr);
+      await tx.wait();
+      // console.log(receipt);
     } catch (error) {
       console.log(error);
     }
   };
 
   const addSubscriber = async () => {
-    console.log(subscriberDetails.address);
-    console.log(subscriberDetails);
-    console.log(indexValue);
+    // console.log(subscriberDetails.address);
+    // console.log(subscriberDetails);
+    // console.log(indexValue);
+    setLoadingAnim(true);
     try {
       const tx = await connectedContract.gainShare(
         subscriberDetails.address,
         subscriberDetails.units,
         indexValue
       );
-      console.log(tx);
-      console.log(parseInt(tx[0]));
-
-      console.log(indexArr);
-      const receipt = await tx.wait();
-      console.log(receipt);
+      await tx.wait();
+      setLoadingAnim(false);
+      setBtnContent("Subscriber Added");
+      setTimeout(() => {
+        setBtnContent("Add Subscriber");
+      }, 3000);
     } catch (error) {
       console.log(error);
+      setLoadingAnim(false);
     }
   };
 
@@ -76,18 +82,6 @@ function SubscriberAdd() {
 
   return (
     <div className="db-sub">
-      {/* <div className="go-back-btn">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      height="36px"
-      viewBox="0 0 24 24"
-      width="36px"
-      fill="#000000"
-    >
-      <path d="M0 0h24v24H0V0z" fill="none" />
-      <path d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" />
-    </svg>
-  </div> */}
       <h1 className="subscriber-h1">Subscriber</h1>
       <p className="subscriber-p">
         Select index number which you have already created and enter recievers
@@ -175,7 +169,9 @@ function SubscriberAdd() {
         </div>
         <div className="subscriber-add-btn">
           {isConnected ? (
-            <button onClick={() => addSubscriber()}>Add Subscriber</button>
+            <button onClick={() => addSubscriber()}>
+              {loadingAnim ? <span className="loader"></span> : btnContent}
+            </button>
           ) : (
             <div className="connect-wallet ">
               <ConnectButton

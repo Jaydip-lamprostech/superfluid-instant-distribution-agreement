@@ -77,6 +77,7 @@
       font-weight: 600;
       box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
       transition: all linear 0.1s;
+      min-width: 201px;
 
       &:hover {
         transform: translateY(-3px);
