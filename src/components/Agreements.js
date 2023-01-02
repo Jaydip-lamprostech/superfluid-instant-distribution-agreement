@@ -118,11 +118,11 @@ function Agreements() {
         // console.log(receipt);
         // console.log("subscribers");
         console.log(subscribersAddress);
-        setLoading(false);
       }
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
