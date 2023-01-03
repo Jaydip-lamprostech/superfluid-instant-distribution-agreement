@@ -259,63 +259,73 @@ function Distribute() {
                 </thead>
                 <tbody>
                   {/* ******** table data map ********** */}
-                  {!loading ? (
-                    subscribersAddress.map((item, key) => {
-                      return (
-                        <tr key={key}>
-                          <td>
-                            {item.address ? (
-                              <div className="blokies-and-address">
-                                <Blokies />
-                                <span className="subscriber-address">
-                                  {item.address}
-                                </span>
-                              </div>
-                            ) : (
-                              <Skeleton
-                                animation="wave"
-                                variant="rounded"
-                                sx={{ bgcolor: "grey.100" }}
-                              />
-                            )}
-                          </td>
-                          <td>{item.units}</td>
-                          <td>
-                            {/* {totalUnits} */}
-                            {amount
-                              ? parseFloat(
-                                  (amount / totalUnits) * item.units
-                                ).toFixed(2)
-                              : "-"}
-                          </td>
-                        </tr>
-                      );
-                    })
+
+                  {indexValue ? (
+                    !loading ? (
+                      subscribersAddress.map((item, key) => {
+                        return (
+                          <tr key={key}>
+                            <td>
+                              {item.address ? (
+                                <div className="blokies-and-address">
+                                  <Blokies />
+                                  <span className="subscriber-address">
+                                    {item.address}
+                                  </span>
+                                </div>
+                              ) : (
+                                <Skeleton
+                                  animation="wave"
+                                  variant="rounded"
+                                  sx={{ bgcolor: "grey.100" }}
+                                />
+                              )}
+                            </td>
+                            <td>{item.units}</td>
+                            <td>
+                              {/* {totalUnits} */}
+                              {amount
+                                ? parseFloat(
+                                    (amount / totalUnits) * item.units
+                                  ).toFixed(2)
+                                : "-"}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td>
+                          <Skeleton
+                            animation="wave"
+                            variant="rounded"
+                            sx={{ bgcolor: "grey.100" }}
+                          />
+                        </td>
+                        <td>
+                          <Skeleton
+                            animation="wave"
+                            variant="rounded"
+                            sx={{ bgcolor: "grey.100" }}
+                          />
+                        </td>
+                        <td>
+                          <Skeleton
+                            animation="wave"
+                            variant="rounded"
+                            sx={{ bgcolor: "grey.100" }}
+                          />
+                        </td>
+                      </tr>
+                    )
                   ) : (
                     <tr>
-                      <td>
-                        <Skeleton
-                          animation="wave"
-                          variant="rounded"
-                          sx={{ bgcolor: "grey.100" }}
-                        />
-                      </td>
-                      <td>
-                        <Skeleton
-                          animation="wave"
-                          variant="rounded"
-                          sx={{ bgcolor: "grey.100" }}
-                        />
-                      </td>
-                      <td>
-                        <Skeleton
-                          animation="wave"
-                          variant="rounded"
-                          sx={{ bgcolor: "grey.100" }}
-                        />
+                      <td colSpan={3} style={{ textAlign: "center" }}>
+                        Select Index to display subscribers
                       </td>
                     </tr>
                   )}
+                  {}
                   {/* ******** table data map ********** */}
 
                   {/* ******** table data map ********** */}
