@@ -216,7 +216,7 @@ function Dashboard() {
                 </table>
               </div>
               <button className="add-fund-btn" onClick={() => AddFunds()}>
-                Add 1000 Wei Contract
+                Add 1000 Wei in Contract
               </button>
             </div>
           </div>
