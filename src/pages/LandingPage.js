@@ -10,6 +10,7 @@ import Distribute from "../components/Distribute";
 import Agreements from "../components/Agreements";
 
 function LandingPage() {
+  const [index, setIndex] = useState();
   const [showDashboard, setDashboard] = useState(true);
   const [showIDA, setIDA] = useState(false);
   const [showSubscriber, setSubscriber] = useState(false);
@@ -173,9 +174,13 @@ function LandingPage() {
           ) : showSubscriber ? (
             <Subscriber />
           ) : showAgreement ? (
-            <Agreements />
+            <Agreements
+              setAgreement={setAgreement}
+              setDistribute={setDistribute}
+              setIndex={setIndex}
+            />
           ) : showDistribute ? (
-            <Distribute />
+            <Distribute index={index} />
           ) : null}
         </div>
       </div>

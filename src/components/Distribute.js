@@ -12,25 +12,25 @@ import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-function Distribute() {
+function Distribute({ index }) {
   const { address } = useAccount();
 
   const [indexValue, setIndexValue] = useState("");
   const [amount, setAmount] = useState();
   const [dataloaded, setDataLoaded] = useState(false);
-  const [subscribersAddress] = useState([]);
+  const [subscribersAddress, setSubscriberAddress] = useState([]);
   const [loading, setLoading] = useState(true);
   const [maxToken, setMaxToken] = useState();
   const [totalUnits, setTotalUnits] = useState(0);
   // let totalUnits = 0;
-  const [totalUnitsArr] = useState([]);
+  const [totalUnitsArr, setTotalUnitsArr] = useState([]);
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [btnContent, setBtnContent] = useState("Distribute");
 
   // let totalUnits = 0;
 
-  const [indexArr] = useState([]);
+  const [indexArr, setIndexArr] = useState([]);
 
   const handleChange = (e) => {
     setIndexValue(e.target.value);
@@ -78,6 +78,7 @@ function Distribute() {
       Abi_IDA,
       signer
     );
+    let count = 0;
     const getIndex = async () => {
       try {
         const tx = await connectedContract.viewAddressIndex(address);
@@ -87,9 +88,14 @@ function Distribute() {
           tx.map((item, key) => {
             indexArr.push(parseInt(item));
             setDataLoaded(true);
+            count++;
             return null;
           });
         console.log(indexArr);
+
+        if (count === tx.length && index) {
+          setIndexValue(index);
+        }
         // const receipt = await tx.wait();
         // console.log(receipt);
       } catch (error) {
@@ -97,7 +103,7 @@ function Distribute() {
       }
     };
     getIndex();
-  });
+  }, []);
 
   useEffect(() => {
     const connectedContract = new ethers.Contract(
@@ -105,20 +111,25 @@ function Distribute() {
       Abi_IDA,
       signer
     );
+    let count = 0;
     const viewSubscribers = async () => {
       setLoading(true);
       subscribersAddress.splice(0, subscribersAddress.length);
+
       try {
         const tx = await connectedContract.viewIndexSubscribers(indexValue);
         console.log(tx);
         if (tx.length > subscribersAddress.length)
           tx.map((item, key) => {
             subscribersAddress.push(item);
+            count++;
             return null;
           });
         // console.log(indexArr);
         // await tx.wait();
-
+        if (count === tx.length) {
+          getSubscriberUnits();
+        }
         // console.log(receipt);
       } catch (error) {
         console.log(error);
@@ -126,8 +137,6 @@ function Distribute() {
     };
     viewSubscribers();
     // setLoading(false);
-
-    getSubscriberUnits();
   }, [indexValue]);
 
   const getSubscriberUnits = async () => {

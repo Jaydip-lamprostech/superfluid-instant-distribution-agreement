@@ -15,7 +15,7 @@ import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Skeleton } from "@mui/material";
 
-function Agreements() {
+function Agreements({ setAgreement, setDistribute, setIndex }) {
   const { address, isConnected } = useAccount();
   // const [indexValue, setIndexValue] = useState(0);
 
@@ -378,7 +378,14 @@ function Agreements() {
                     </div>
                     <div className="agreements-list-buttons">
                       {/* <button className="edit-agreement">Edit</button> */}
-                      <button className="distribute-agreement">
+                      <button
+                        className="distribute-agreement"
+                        onClick={() => {
+                          setIndex(item.index);
+                          setAgreement(false);
+                          setDistribute(true);
+                        }}
+                      >
                         Distribute
                       </button>
                     </div>
