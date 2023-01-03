@@ -13,21 +13,24 @@ import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function Distribute() {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
 
   const [indexValue, setIndexValue] = useState("");
   const [amount, setAmount] = useState();
   const [dataloaded, setDataLoaded] = useState(false);
-  const [subscribersAddress, setSubscriberAddress] = useState([]);
+  const [subscribersAddress] = useState([]);
   const [loading, setLoading] = useState(true);
   const [maxToken, setMaxToken] = useState();
   const [totalUnits, setTotalUnits] = useState(0);
   // let totalUnits = 0;
-  const [totalUnitsArr, setTotalUnitsArr] = useState([]);
+  const [totalUnitsArr] = useState([]);
+
+  const [loadingAnim, setLoadingAnim] = useState(false);
+  const [btnContent, setBtnContent] = useState("Distribute");
 
   // let totalUnits = 0;
 
-  const [indexArr, setIndexArr] = useState([]);
+  const [indexArr] = useState([]);
 
   const handleChange = (e) => {
     setIndexValue(e.target.value);
@@ -43,13 +46,21 @@ function Distribute() {
   );
 
   const distribute = async () => {
+    setLoadingAnim(true);
     const amtToUpgrade = ethers.utils.parseEther(amount.toString());
     console.log(amtToUpgrade);
     try {
       const tx = await connectedContract.distribute(indexValue, amtToUpgrade);
       console.log(tx);
+      await tx.wait();
+      setLoadingAnim(false);
+      setBtnContent("Token Distributed");
+      setTimeout(() => {
+        setBtnContent("Distribute");
+      }, 3000);
     } catch (err) {
       console.log(err);
+      setLoadingAnim(false);
     }
   };
   const getFunds = async () => {
@@ -334,7 +345,9 @@ function Distribute() {
               <div className="inside-subscriber-list"></div>
             </div>
             <div className="distribute-btn">
-              <button onClick={() => distribute()}>Distribute</button>
+              <button onClick={() => distribute()}>
+                {loadingAnim ? <span className="loader"></span> : btnContent}
+              </button>
             </div>
           </div>
         </div>
