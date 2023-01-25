@@ -3,9 +3,12 @@ import { FormControl, MenuItem, Select } from "@mui/material";
 
 import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { ethers } from "ethers";
+import { createClient } from "urql";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+import { Framework } from "@superfluid-finance/sdk-core";
 
 function SubscriberAdd() {
   const [indexValue, setIndexValue] = useState("");
@@ -25,6 +28,50 @@ function SubscriberAdd() {
     setIndexValue(e.target.value);
   };
 
+  const getIndexes = async () => {
+    const API =
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
+
+    const data_ = `
+    query {
+      indexes(
+        where: {publisher_: {id: "0xb611e37650873e8f1e1dee69605a4fb1376dca78"},}
+      ) {
+        publisher {
+          id
+          publishedIndexes {
+            indexValue
+            indexId
+            totalUnits
+            totalUnitsPending
+            totalUnitsApproved
+            subscriptions {
+              id
+              approved
+              units
+            }
+          }
+        }
+      }
+    }
+  `;
+    const c = createClient({
+      url: API,
+    });
+    const result1 = await c.query(data_).toPromise();
+    console.log("finalData");
+    // console.log(result1.data.indexes[0].publisher.publishedIndexes);
+    let arr = result1.data.indexes[0].publisher.publishedIndexes;
+    // console.log(arr);
+    if (arr.length > indexArr.length) {
+      for (let i = 0; i < arr.length; i++) {
+        indexArr.push(arr[i].indexId);
+      }
+    }
+    console.log(indexArr);
+    setDataLoaded(true);
+  };
+
   const provider = useProvider();
   const { data: signer } = useSigner();
 
@@ -34,51 +81,86 @@ function SubscriberAdd() {
     signer
   );
 
-  const getIndex = async () => {
-    try {
-      const tx = await connectedContract.viewAddressIndex(address);
-      // console.log(tx);
-      // console.log(parseInt(tx[0]));
-      if (tx.length > indexArr.length)
-        tx.map((item, key) => {
-          indexArr.push(parseInt(item));
-          setDataLoaded(true);
-          return null;
-        });
-      // console.log(indexArr);
-      await tx.wait();
-      // console.log(receipt);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const getIndex = async () => {
+  //   try {
+  //     const tx = await connectedContract.viewAddressIndex(address);
+  //     // console.log(tx);
+  //     // console.log(parseInt(tx[0]));
+  //     if (tx.length > indexArr.length)
+  //       tx.map((item, key) => {
+  //         indexArr.push(parseInt(item));
+  //         setDataLoaded(true);
+  //         return null;
+  //       });
+  //     // console.log(indexArr);
+  //     await tx.wait();
+  //     // console.log(receipt);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const addSubscriber = async () => {
+  //   // console.log(subscriberDetails.address);
+  //   // console.log(subscriberDetails);
+  //   // console.log(indexValue);
+  //   setLoadingAnim(true);
+  //   try {
+  //     const tx = await connectedContract.gainShare(
+  //       subscriberDetails.address,
+  //       subscriberDetails.units,
+  //       indexValue
+  //     );
+  //     await tx.wait();
+  //     setLoadingAnim(false);
+  //     setBtnContent("Subscriber Added");
+  //     setTimeout(() => {
+  //       setBtnContent("Add Subscriber");
+  //     }, 3000);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoadingAnim(false);
+  //   }
+  // };
 
   const addSubscriber = async () => {
-    // console.log(subscriberDetails.address);
-    // console.log(subscriberDetails);
-    // console.log(indexValue);
     setLoadingAnim(true);
+    console.log("Inside addSubscriber() function");
+
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    const daix = await sf.loadSuperToken("fDAIx");
     try {
-      const tx = await connectedContract.gainShare(
-        subscriberDetails.address,
-        subscriberDetails.units,
-        indexValue
-      );
-      await tx.wait();
-      setLoadingAnim(false);
-      setBtnContent("Subscriber Added");
-      setTimeout(() => {
-        setBtnContent("Add Subscriber");
-      }, 3000);
+      const createIndexOperation = daix.updateSubscriptionUnits({
+        indexId: indexValue,
+        subscriber: subscriberDetails.address,
+        units: subscriberDetails.units,
+      });
+      console.log(`Adding ${subscriberDetails.address} as subscriber...`);
+
+      const sign = await createIndexOperation.exec(signer);
+      const receipt = await sign.wait(sign);
+      if (receipt) {
+        setLoadingAnim(false);
+        setBtnContent("Subscriber Added");
+        setTimeout(() => {
+          setBtnContent("Add Subscriber");
+        }, 3000);
+        console.log(
+          `subscriber added : ${subscriberDetails.address} with ${subscriberDetails.units} uints at Index ID: ${indexValue}`
+        );
+      }
     } catch (error) {
       console.log(error);
-      setLoadingAnim(false);
     }
   };
 
   useEffect(() => {
-    getIndex();
-  });
+    // getIndex();
+    getIndexes();
+  }, []);
 
   return (
     <div className="db-sub">

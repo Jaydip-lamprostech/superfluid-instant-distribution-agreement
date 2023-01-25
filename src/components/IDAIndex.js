@@ -1,48 +1,80 @@
 import React, { useState } from "react";
 import "../styles/dashboard.scss";
 import "../styles/ida.scss";
-
-import Abi_IDA from "../artifacts/Abi_IDA.json";
-import { ethers } from "ethers";
+// import Abi_IDA from "../artifacts/Abi_IDA.json";
+// import { ethers } from "ethers";
 import { useAccount, useProvider, useSigner } from "wagmi";
-import { CONTRACT_ADDRESS } from "../config";
+// import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+import { Framework } from "@superfluid-finance/sdk-core";
 
 function IDAIndex() {
   const { isConnected } = useAccount();
   const provider = useProvider();
   const { data: signer } = useSigner();
+  // const [id, setId] = useState();
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [btnContent, setBtnContent] = useState("Create Index");
-
-  const connectedContract = new ethers.Contract(
-    CONTRACT_ADDRESS,
-    Abi_IDA,
-    signer
-  );
 
   // host address 0x22ff293e14f1ec3a09b137e9e06084afd63addf9
 
   // fdaix address 0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00
 
+  // const createIndex = async () => {
+  //   setLoadingAnim(true);
+  //   try {
+  //     const tx = await connectedContract.createNewStream(
+  //       "0x22ff293e14f1ec3a09b137e9e06084afd63addf9",
+  //       "0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00"
+  //     );
+  //     // console.log(tx);
+  //     await tx.wait();
+  //     setLoadingAnim(false);
+  //     setBtnContent("Index Created");
+  //     setTimeout(() => {
+  //       setBtnContent("Create Index");
+  //     }, 3000);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoadingAnim(false);
+  //   }
+  // };
+
   const createIndex = async () => {
     setLoadingAnim(true);
+    const id = Math.floor(Math.random() * 1000 + 1);
+    console.log("Inside createIndex() function");
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    const daix = await sf.loadSuperToken("fDAIx");
     try {
-      const tx = await connectedContract.createNewStream(
-        "0x22ff293e14f1ec3a09b137e9e06084afd63addf9",
-        "0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00"
-      );
-      // console.log(tx);
-      await tx.wait();
-      setLoadingAnim(false);
-      setBtnContent("Index Created");
-      setTimeout(() => {
-        setBtnContent("Create Index");
-      }, 3000);
+      const createIndexOperation = daix.createIndex({
+        indexId: id.toString(),
+      });
+      console.log(`Creating index ID:${id}...`);
+
+      const sign = await createIndexOperation.exec(signer);
+      const receipt = await sign.wait(sign);
+      if (receipt) {
+        setLoadingAnim(false);
+        setBtnContent(`Index No. ${id} Created`);
+        setTimeout(() => {
+          setBtnContent("Create Index");
+        }, 4000);
+        console.log(
+          `Congrats - you've just created a new Index!
+             Network: Goerli
+             Super Token: fDAIx
+             Index ID: ${id}
+          `
+        );
+      }
     } catch (error) {
       console.log(error);
-      setLoadingAnim(false);
     }
   };
   return (
@@ -54,6 +86,7 @@ function IDAIndex() {
             A channel made by a publisher account to distribute Super Tokens to
             any amount of receivers on a proportional basis
           </p>
+
           <div className="ida-create-index-btn" style={{ minWidth: "50px" }}>
             {isConnected ? (
               <button onClick={() => createIndex()}>
