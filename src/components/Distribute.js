@@ -11,6 +11,7 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { createClient } from "urql";
 
 function Distribute({ index }) {
   const { address } = useAccount();
@@ -23,7 +24,7 @@ function Distribute({ index }) {
   const [maxToken, setMaxToken] = useState();
   const [totalUnits, setTotalUnits] = useState(0);
   // let totalUnits = 0;
-  const [totalUnitsArr, setTotalUnitsArr] = useState([]);
+  // const [totalUnitsArr, setTotalUnitsArr] = useState([]);
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [btnContent, setBtnContent] = useState("Distribute");
@@ -31,10 +32,10 @@ function Distribute({ index }) {
   // let totalUnits = 0;
 
   const [indexArr, setIndexArr] = useState([]);
+  const [temp, setTemp] = useState([]);
 
-  const handleChange = (e) => {
-    setIndexValue(e.target.value);
-  };
+  const [subListLoading, setSubListLoading] = useState(true);
+  const [showNewLoading, setNewLoading] = useState(false);
 
   const provider = useProvider();
   const { data: signer } = useSigner();
@@ -45,24 +46,121 @@ function Distribute({ index }) {
     signer
   );
 
-  const distribute = async () => {
+  const distributeFunds = async () => {
     setLoadingAnim(true);
-    const amtToUpgrade = ethers.utils.parseEther(amount.toString());
-    console.log(amtToUpgrade);
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+
+    const daix = await sf.loadSuperToken("fDAIx");
     try {
-      const tx = await connectedContract.distribute(indexValue, amtToUpgrade);
-      console.log(tx);
-      await tx.wait();
-      setLoadingAnim(false);
-      setBtnContent("Token Distributed");
-      setTimeout(() => {
-        setBtnContent("Distribute");
-      }, 3000);
+      const subscribeOperation = daix.distribute({
+        indexId: indexValue.toString(),
+        amount: amount.toString(),
+      });
+      const tx = await subscribeOperation.exec(signer);
+      const receipt = await tx.wait();
+      if (receipt) {
+        setLoadingAnim(false);
+        setBtnContent("Token Distributed");
+        setTimeout(() => {
+          setBtnContent("Distribute");
+        }, 3000);
+        console.log("FUNDS DISTRIBUTED");
+      }
     } catch (err) {
       console.log(err);
-      setLoadingAnim(false);
     }
   };
+
+  const handleChange = (e) => {
+    // setSubListLoading(true);
+    setUnits(e);
+    setNewLoading(false);
+    setIndexValue(e);
+
+    // getSubscriberUnits();
+  };
+
+  const setUnits = async (e) => {
+    // setNewLoading(true);
+    subscribersAddress.splice(0, subscribersAddress.length);
+    console.log(e);
+
+    for (let i = 0; i < temp.length; i++) {
+      if (temp[i].indexId === String(e)) {
+        setTotalUnits(temp[i].totalUnits);
+        if (temp[i].subscriptions.length > subscribersAddress.length) {
+          for (let j = 0; j < temp[i].subscriptions.length; j++) {
+            subscribersAddress.push(temp[i].subscriptions[j]);
+          }
+        }
+      }
+    }
+
+    console.log(subscribersAddress);
+    // setSubListLoading(false);
+  };
+  // smart contract functions
+
+  useEffect(() => {
+    const getIndexes = async () => {
+      const API =
+        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
+
+      const data_ = `
+    query {
+      indexes(
+        where: {publisher_: {id: "${address.toLowerCase()}"},}
+      ) {
+        publisher {
+          id
+          publishedIndexes {
+            indexValue
+            indexId
+            totalUnits
+            totalUnitsPending
+            totalUnitsApproved
+            subscriptions {
+              subscriber {
+                id
+              }
+              approved
+              units
+            }
+          }
+        }
+      }
+    }
+  `;
+      const c = createClient({
+        url: API,
+      });
+      const result1 = await c.query(data_).toPromise();
+      // console.log("finalData");
+      // console.log(result1.data.indexes[0].publisher.publishedIndexes);
+      let arr;
+      if (result1.data.indexes.length > 0) {
+        arr = result1.data.indexes[0].publisher.publishedIndexes;
+      }
+      // console.log(arr);
+      if (arr.length > indexArr.length) {
+        for (let i = 0; i < arr.length; i++) {
+          indexArr.push(arr[i].indexId);
+        }
+      }
+      if (arr.length > temp.length) {
+        for (let i = 0; i < arr.length; i++) {
+          temp.push(arr[i]);
+        }
+      }
+      console.log(temp);
+      setDataLoaded(true);
+    };
+    getIndexes();
+  }, [indexValue]);
+
   const getFunds = async () => {
     try {
       const tx = await connectedContract.viewAddressStake();
@@ -72,124 +170,13 @@ function Distribute({ index }) {
       console.log(err);
     }
   };
-  useEffect(() => {
-    const connectedContract = new ethers.Contract(
-      CONTRACT_ADDRESS,
-      Abi_IDA,
-      signer
-    );
-    let count = 0;
-    const getIndex = async () => {
-      try {
-        const tx = await connectedContract.viewAddressIndex(address);
-        console.log(tx);
-        console.log(parseInt(tx[0]));
-        if (tx.length > indexArr.length)
-          tx.map((item, key) => {
-            indexArr.push(parseInt(item));
-            setDataLoaded(true);
-            count++;
-            return null;
-          });
-        console.log(indexArr);
-
-        if (count === tx.length && index) {
-          setIndexValue(index);
-        }
-        // const receipt = await tx.wait();
-        // console.log(receipt);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getIndex();
-  }, []);
-
-  useEffect(() => {
-    const connectedContract = new ethers.Contract(
-      CONTRACT_ADDRESS,
-      Abi_IDA,
-      signer
-    );
-    let count = 0;
-    const viewSubscribers = async () => {
-      setLoading(true);
-      subscribersAddress.splice(0, subscribersAddress.length);
-
-      try {
-        const tx = await connectedContract.viewIndexSubscribers(indexValue);
-        console.log(tx);
-        if (tx.length > subscribersAddress.length)
-          tx.map((item, key) => {
-            subscribersAddress.push(item);
-            count++;
-            return null;
-          });
-        // console.log(indexArr);
-        // await tx.wait();
-        if (count === tx.length) {
-          getSubscriberUnits();
-        }
-        // console.log(receipt);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    viewSubscribers();
-    // setLoading(false);
-  }, [indexValue]);
-
-  const getSubscriberUnits = async () => {
-    console.log(address);
-    console.log(signer);
-    console.log(indexValue);
-    const sf = await Framework.create({
-      chainId: 5,
-      provider: provider,
-    });
-    //daix token loading
-    const daix = await sf.loadSuperToken("fDAIx");
-    totalUnitsArr.splice(0, totalUnitsArr.length);
-    for (let i = 0; i < subscribersAddress.length; i++) {
-      console.log(subscribersAddress[i]);
-      const getSub = await daix.getSubscription({
-        publisher: connectedContract.address,
-        indexId: indexValue,
-        subscriber: subscribersAddress[i],
-        providerOrSigner: signer,
-      });
-      console.log(getSub);
-      // totalUnits += parseInt(getSub.units);
-      // let tempUnit = parseFloat(getSub.units);
-      if (totalUnitsArr.length < subscribersAddress.length)
-        totalUnitsArr.push(parseInt(getSub.units));
-      // console.log(tempUnit);
-      // setTotalUnits(totalUnits + tempUnit);
-      console.log(totalUnitsArr);
-
-      subscribersAddress[i] = {
-        address: subscribersAddress[i],
-        units: getSub.units,
-      };
-    }
-    let sum = 0;
-    totalUnitsArr.forEach((item) => {
-      sum += item;
-    });
-    setTotalUnits(sum);
-    setLoading(false);
-    console.log(totalUnits);
-    console.log(subscribersAddress);
-    console.log(loading);
-  };
-
-  // useEffect(() => {
-  //   if (indexValue > 0) getSubscriberUnits();
-  // }, [indexValue]);
 
   useEffect(() => {
     getFunds();
-  });
+    if (index) {
+      setUnits(index);
+    }
+  }, []);
 
   if (maxToken)
     return (
@@ -208,7 +195,7 @@ function Distribute({ index }) {
                   displayEmpty
                   id="demo-simple-select"
                   value={indexValue}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e.target.value)}
                   sx={{
                     margin: "10px 0px",
                     color: "rgba(18, 20, 30, 0.87)",
@@ -274,6 +261,7 @@ function Distribute({ index }) {
                   <tr>
                     <th>Subscribers</th>
                     <th>Units</th>
+                    <th>Approval</th>
                     <th>Amount</th>
                   </tr>
                 </thead>
@@ -281,16 +269,21 @@ function Distribute({ index }) {
                   {/* ******** table data map ********** */}
 
                   {indexValue ? (
-                    !loading ? (
+                    !showNewLoading ? (
                       subscribersAddress.map((item, key) => {
                         return (
                           <tr key={key}>
                             <td>
-                              {item.address ? (
+                              {item.subscriber.id ? (
                                 <div className="blokies-and-address">
                                   <Blokies />
                                   <span className="subscriber-address">
-                                    {item.address}
+                                    {item.subscriber.id.substring(0, 8) +
+                                      "..." +
+                                      item.subscriber.id.substring(
+                                        item.subscriber.id.length - 6,
+                                        item.subscriber.id.length
+                                      )}
                                   </span>
                                 </div>
                               ) : (
@@ -303,8 +296,11 @@ function Distribute({ index }) {
                             </td>
                             <td>{item.units}</td>
                             <td>
+                              {item.approved === true ? "Approved" : "Pending"}
+                            </td>
+                            <td>
                               {/* {totalUnits} */}
-                              {amount
+                              {amount && totalUnits
                                 ? parseFloat(
                                     (amount / totalUnits) * item.units
                                   ).toFixed(2)
@@ -336,11 +332,18 @@ function Distribute({ index }) {
                             sx={{ bgcolor: "grey.100" }}
                           />
                         </td>
+                        <td>
+                          <Skeleton
+                            animation="wave"
+                            variant="rounded"
+                            sx={{ bgcolor: "grey.100" }}
+                          />
+                        </td>
                       </tr>
                     )
                   ) : (
                     <tr>
-                      <td colSpan={3} style={{ textAlign: "center" }}>
+                      <td colSpan={4} style={{ textAlign: "center" }}>
                         Select Index to display subscribers
                       </td>
                     </tr>
@@ -354,7 +357,7 @@ function Distribute({ index }) {
               <div className="inside-subscriber-list"></div>
             </div>
             <div className="distribute-btn">
-              <button onClick={() => distribute()}>
+              <button onClick={() => distributeFunds()}>
                 {loadingAnim ? <span className="loader"></span> : btnContent}
               </button>
             </div>

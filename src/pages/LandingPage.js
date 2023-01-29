@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import "../styles/landingpage.scss";
@@ -8,14 +8,157 @@ import IDAIndex from "../components/IDAIndex";
 import Subscriber from "../components/Subscriber";
 import Distribute from "../components/Distribute";
 import Agreements from "../components/Agreements";
+import { Box, Button, Modal, Skeleton, Typography } from "@mui/material";
+import { useAccount, useSigner } from "wagmi";
+import Cookies from "universal-cookie";
+import * as PushAPI from "@pushprotocol/restapi";
 
 function LandingPage() {
+  const cookies = new Cookies();
+
   const [index, setIndex] = useState();
   const [showDashboard, setDashboard] = useState(true);
   const [showIDA, setIDA] = useState(false);
   const [showSubscriber, setSubscriber] = useState(false);
   const [showAgreement, setAgreement] = useState(false);
   const [showDistribute, setDistribute] = useState(false);
+  const { data: signer } = useSigner();
+  const [open, setOpen] = useState(false);
+  const [showOpted, setOpted] = useState(false);
+  const { address, isConnected } = useAccount();
+  const [showPushNotifications, setPushNotifications] = useState([]);
+  const [showNewNotification, setNewNotification] = useState(false);
+  const [notificationNumber, setnotificationNumber] = useState(0);
+  const [showDisplayNotification, setDisplayNotification] = useState(false);
+
+  const handleOpen = () => {
+    setDisplayNotification(true);
+    setnotificationNumber(0);
+    cookies.set("notificationCount", 0);
+    setNewNotification(false);
+    setOpen(true);
+    // notifi();
+  };
+  const handleClose = () => {
+    setOpen(false);
+    setnotificationNumber(0);
+    cookies.set("notificationCount", 0);
+    setNewNotification(false);
+    setDisplayNotification(false);
+  };
+
+  const optIn = async () => {
+    await PushAPI.channels.subscribe({
+      signer: signer,
+      channelAddress: "eip155:5:0x070F992829575477A0E91D9D3e49dCFcd06d3C22", // channel address in CAIP
+      userAddress: `eip155:5:${address}`, // user address in CAIP
+      onSuccess: () => {
+        console.log("opt in success");
+      },
+      onError: () => {
+        console.error("opt in error");
+      },
+      env: "staging",
+    });
+  };
+
+  const optOut = async () => {
+    await PushAPI.channels.unsubscribe({
+      signer: signer,
+      channelAddress: "eip155:5:0x070F992829575477A0E91D9D3e49dCFcd06d3C22", // channel address in CAIP
+      userAddress: `eip155:5:${address}`, // user address in CAIP
+      onSuccess: () => {
+        console.log("opt out success");
+      },
+      onError: () => {
+        console.error("opt out error");
+      },
+      env: "staging",
+    });
+  };
+
+  useEffect(() => {
+    console.log(cookies.get("notificationCount"));
+    if (address) {
+      const timeInterval = setInterval(async () => {
+        console.log("timer");
+        const subscriptions = await PushAPI.user.getSubscriptions({
+          user: `eip155:5:${address}`, // user address in CAIP
+          env: "staging",
+        });
+        if (subscriptions.length === 0) {
+          setOpted(false);
+        }
+        for (let i = 0; i < subscriptions.length; i++) {
+          if (
+            subscriptions[i].channel ===
+            "0x070F992829575477A0E91D9D3e49dCFcd06d3C22"
+          ) {
+            console.log("subscribed");
+            setOpted(true);
+          }
+        }
+        console.log(subscriptions);
+        const notifications = await PushAPI.user.getFeeds({
+          user: `eip155:5:${address}`, // user address in CAIP
+          env: "staging",
+          limit: 100,
+        });
+        console.log(notifications);
+        // for (let i = 0; i < notifications.length; i++) {
+        //   if(notifications[i].app !== "")
+        // }
+        // if (
+        //   cookies.get("notificationCount") !==
+        //   notifications.length - showPushNotifications.length
+        // ) {
+        //   cookies.set(
+        //     "notificationCount",
+        //     notifications.length - showPushNotifications.length
+        //   );
+        // }
+
+        if (notifications.length > showPushNotifications.length) {
+          setNewNotification(true);
+          cookies.set(
+            "notificationCount",
+            notifications.length - showPushNotifications.length
+          );
+          showPushNotifications.splice(0, showPushNotifications.length);
+          for (let i = 0; i < notifications.length; i++) {
+            // if (notifications[i].app === "Money-Router")
+            showPushNotifications.push(notifications[i]);
+          }
+          // if (showPushNotifications.length === notifications.length) {
+          //   setDisplayNotification(true);
+          // }
+
+          setnotificationNumber(cookies.get("notificationCount"));
+        }
+
+        // console.log(showPushNotifications);
+        // setPushNotifications(showPushNotifications);
+      }, 5000);
+      return () => clearInterval(timeInterval);
+    }
+  }, [address]);
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50vw",
+    bgcolor: "background.paper",
+    borderRadius: "20px",
+    boxShadow: 24,
+    p: 0,
+    paddingBottom: "32px",
+    maxHeight: "70vh",
+    overflow: "auto",
+    overflowX: "hidden",
+    maxWidth: "700px",
+  };
 
   return (
     <div className="main">
@@ -154,6 +297,26 @@ function LandingPage() {
       <div className="main-right">
         <div className="right-header-parent">
           <header className="right-header">
+            {isConnected ? (
+              <Button onClick={handleOpen} className="notification-btn">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  width="24px"
+                  fill="#000000"
+                >
+                  <path d="M0 0h24v24H0V0z" fill="none" />
+                  <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.89 0 1.34-1.08.71-1.71L18 16z" />
+                </svg>
+                {showNewNotification ? (
+                  <span className="red-dot">
+                    {notificationNumber > 0 ? notificationNumber : null}
+                  </span>
+                ) : null}
+              </Button>
+            ) : null}
+
             <ConnectButton
               accountStatus={{
                 smallScreen: "avatar",
@@ -184,6 +347,80 @@ function LandingPage() {
           ) : null}
         </div>
       </div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            style={{
+              position: "sticky",
+              top: "0",
+              backgroundColor: "#f3f4f6",
+              padding: "20px 20px",
+              margin: "0px",
+              fontWeight: 600,
+            }}
+          >
+            Notifications
+            {showOpted === true ? (
+              <button onClick={() => optOut()} className="push-btns">
+                Opt Out
+              </button>
+            ) : showOpted === false ? (
+              <button onClick={() => optIn()} className="push-btns">
+                Opt IN
+              </button>
+            ) : (
+              <Skeleton
+                animation="wave"
+                variant="rounded"
+                sx={{ bgcolor: "grey.100" }}
+              />
+            )}
+          </Typography>{" "}
+          <Typography id="modal-modal-description" sx={{ mt: 2, p: 2 }}>
+            {showDisplayNotification &&
+              showPushNotifications.length > 0 &&
+              showOpted === true &&
+              showPushNotifications.map((item, key) => {
+                return (
+                  <div
+                    style={{
+                      border: "1px solid #10bb35aa",
+                      margin: "10px 0px",
+                      padding: "10px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <h4 key={key}>{item.title} </h4>
+                    <p>{item.message}</p>
+                  </div>
+                );
+              })}
+            {!showOpted ? (
+              <div
+                style={{
+                  border: "1px solid #10bb35aa",
+                  margin: "10px 0px",
+                  padding: "10px",
+                  borderRadius: "10px",
+                }}
+              >
+                <h4>Opt In Superfluid IDA channel to get notifications </h4>
+                <p>
+                  Channel address - 0x070F992829575477A0E91D9D3e49dCFcd06d3C22{" "}
+                </p>
+              </div>
+            ) : null}
+          </Typography>
+        </Box>
+      </Modal>
     </div>
   );
 }

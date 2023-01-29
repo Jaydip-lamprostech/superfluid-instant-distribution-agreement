@@ -14,6 +14,7 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Skeleton } from "@mui/material";
+import { createClient } from "urql";
 
 function Agreements({ setAgreement, setDistribute, setIndex }) {
   const { address, isConnected } = useAccount();
@@ -26,6 +27,8 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
   // const [dataloaded, setDataLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tokenBalance, setTokenBalance] = useState();
+  const [btnContent, setBtnContent] = useState("Distribute");
+  const [loadingAnim, setLoadingAnim] = useState(false);
 
   const [open, setOpen] = useState(false);
 
@@ -53,122 +56,14 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
 
   const provider = useProvider();
   const { data: signer } = useSigner();
+  const [temp, setTemp] = useState([]);
+  const [dataloaded, setDataLoaded] = useState(false);
 
   const connectedContract = new ethers.Contract(
     CONTRACT_ADDRESS,
     Abi_IDA,
     signer
   );
-
-  const getIndex = async () => {
-    try {
-      const tx = await connectedContract.viewAddressIndex(address);
-      // console.log(tx);
-      // console.log(parseInt(tx[0]));
-      if (tx.length > indexArr.length) {
-        // tx.map((item, key) => {
-        //   indexArr.push(parseInt(item));
-        //   subscribersAddress.push({
-        //     index: parseInt(item),
-        //     subscriber: [],
-        //     sub_units: [],
-        //   });
-
-        //   return null;
-        // });
-        var dataCount = 0;
-
-        for (let txn = 0; txn < tx.length; txn++) {
-          indexArr.push(parseInt(tx[txn]));
-          subscribersAddress.push({
-            index: parseInt(tx[txn]),
-            subscriber: [],
-            sub_units: [],
-          });
-          dataCount++;
-        }
-
-        if (dataCount === tx.length) {
-          viewSubscribers();
-        }
-
-        console.log(indexArr);
-      }
-      // console.log(receipt);
-    } catch (error) {
-      console.log(error);
-    } finally {
-    }
-    // setLoading(true);
-  };
-
-  const viewSubscribers = async () => {
-    try {
-      var dataCount = 0;
-
-      for (let i = 0; i < indexArr.length; i++) {
-        const tx = await connectedContract.viewIndexSubscribers(indexArr[i]);
-        // console.log(tx);
-        // let units;
-        if (tx) {
-          if (tx.length > subscribersAddress[i].subscriber.length) {
-            for (let j = 0; j < tx.length; j++) {
-              // await getSubscriberUnits(tx[j], i);
-              const sf = await Framework.create({
-                chainId: 5,
-                provider: provider,
-              });
-              //daix token loading
-              const daix = await sf.loadSuperToken("fDAIx");
-              // console.log(indexArr);
-              // console.log(subscribersAddress[i]);
-              const getSub = await daix.getSubscription({
-                publisher: connectedContract.address,
-                indexId: indexArr[i],
-                subscriber: `${tx[j]}`,
-                providerOrSigner: signer,
-              });
-              console.log(subscribersAddress);
-              console.log(getSub.units);
-              // if (getSub.units) units = getSub.units;
-              // if (subscribersAddress[i].subscriber.length < tx.length)
-              if (
-                !subscribersAddress[i].subscriber.includes({
-                  address: tx[j],
-                  units: getSub.units,
-                })
-              )
-                subscribersAddress[i].subscriber.push({
-                  address: tx[j],
-                  units: getSub.units,
-                });
-            }
-            // tx.map(async (item, key) => {
-            //   // subscribersAddress[i].push(item);
-            //   ///
-
-            //   await getSubscriberUnits(item, i);
-            //   ///
-            //   return null;
-            // });
-          }
-        }
-
-        // console.log(indexArr);
-        // tx.wait();
-        // console.log(receipt);
-        // console.log("subscribers");
-        console.log(subscribersAddress);
-        dataCount++;
-        // setLoading(false);
-      }
-      if (dataCount === indexArr.length) {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const getFunds = async () => {
     try {
@@ -180,57 +75,61 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
     }
   };
 
+  const getIndexes = async () => {
+    const API =
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
+
+    const data_ = `
+  query {
+    indexes(
+      where: {publisher_: {id: "${address.toLowerCase()}"},}
+    ) {
+      publisher {
+        id
+        publishedIndexes {
+          indexValue
+          indexId
+          totalUnits
+          totalUnitsPending
+          totalUnitsApproved
+          subscriptions {
+            subscriber {
+              id
+            }
+            approved
+            units
+          }
+        }
+      }
+    }
+  }
+`;
+    const c = createClient({
+      url: API,
+    });
+    const result1 = await c.query(data_).toPromise();
+    // console.log("finalData");
+    // console.log(result1.data.indexes[0].publisher.publishedIndexes);
+    let arr = result1.data.indexes[0].publisher.publishedIndexes;
+    console.log(arr);
+    if (arr.length > indexArr.length) {
+      for (let i = 0; i < arr.length; i++) {
+        indexArr.push(arr[i]);
+      }
+    }
+    if (arr.length > temp.length) {
+      for (let i = 0; i < arr.length; i++) {
+        temp.push(arr[i]);
+      }
+    }
+    // console.log(indexArr);
+    setDataLoaded(true);
+  };
+
   useEffect(() => {
-    // setLoading(true);
-
-    getIndex();
-    // viewSubscribers();
+    if (address) getIndexes();
     getFunds();
-
-    // return () => setLoading(true);
-  }, []);
-
-  // const getSubscriberUnits = async () => {
-  //   // console.log("inside unit function");
-  //   // console.log(address);
-  //   // console.log(signer);
-  //   // console.log(indexValue);
-  //   const sf = await Framework.create({
-  //     chainId: 5,
-  //     provider: provider,
-  //   });
-  //   //daix token loading
-  //   const daix = await sf.loadSuperToken("fDAIx");
-  //   // console.log(indexArr);
-  //   for (let i = 0; i < indexArr.length; i++) {
-  //     // console.log(subscribersAddress[i]);
-  //     for (let j = 0; j < subscribersAddress[i].subscriber.length; j++) {
-  //       const getSub = await daix.getSubscription({
-  //         publisher: connectedContract.address,
-  //         indexId: indexArr[i],
-  //         subscriber: subscribersAddress[i].subscriber[j],
-  //         providerOrSigner: signer,
-  //       });
-  //       // console.log(getSub.units);
-  //       if (!subscribersAddress[i].sub_units.includes(getSub.units))
-  //         subscribersAddress[i].sub_units.push(getSub.units);
-  //       // subscribersAddress[i][j] = {
-  //       //   address: subscribersAddress[i],
-  //       //   units: getSub.units,
-  //       // };
-  //     }
-  //     // console.log(subscribersAddress);
-  //   }
-  //   console.log(subscribersAddress);
-  //   // console.log(loading);
-  //
-  // };
-
-  // useEffect(() => {
-  //   // if (indexValue > 0) getSubscriberUnits();
-  // }, [indexValue]);
-
-  // }
+  }, [address]);
 
   if (!isConnected)
     return (
@@ -270,8 +169,8 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
           </p>
           {/* ****************for mapping************** */}
 
-          {!loading ? (
-            subscribersAddress.map((item, key) => {
+          {dataloaded ? (
+            indexArr.map((item, key) => {
               return (
                 <div className="agreement-box" key={key}>
                   {/* <h3>Subscriber Address</h3> */}
@@ -280,7 +179,7 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
                     <div className="agreement-item-head">
                       <span className="agreement-number-span">
                         Index #
-                        <span className="agreement-number">{item.index}</span>
+                        <span className="agreement-number">{item.indexId}</span>
                       </span>
                       <span className="agreement-number-span">
                         Amount -
@@ -294,76 +193,85 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
                         <thead>
                           <tr>
                             <th>Subscribers</th>
+                            <th>Approval</th>
                             <th>Units</th>
                             <th></th>
                           </tr>
                         </thead>
                         <tbody>
                           {/* ******** table data map ********** */}
-                          {subscribersAddress[key].subscriber.length > 0 ? (
-                            subscribersAddress[key].subscriber.map(
-                              (item, subkey) => {
-                                return (
-                                  <tr key={subkey}>
-                                    <td>
-                                      <div className="blokies-and-address">
-                                        <Blokies />
-                                        <span className="subscriber-address">
-                                          {item.address}
-                                        </span>
-                                      </div>
-                                    </td>
-                                    <td>{item.units}</td>
-                                    <td>
-                                      <div className="edit-delete-buttons">
-                                        <button
-                                          className="edit-subscriber-button"
-                                          onClick={() => {
-                                            handleOpen();
-                                            // setEditSubscriberData({
-                                            //   ...editSubscriberData,
-                                            //   sub_address:
-                                            //     showSubScribers[key].sub_address,
-                                            //   unit: showSubScribers[key].unit,
-                                            // });
-                                          }}
+                          {item.subscriptions.length > 0 ? (
+                            item.subscriptions.map((i, subkey) => {
+                              return (
+                                <tr key={subkey}>
+                                  <td>
+                                    <div className="blokies-and-address">
+                                      <Blokies />
+                                      <span className="subscriber-address">
+                                        {i.subscriber.id.substring(0, 8) +
+                                          "..." +
+                                          i.subscriber.id.substring(
+                                            i.subscriber.id.length - 6,
+                                            i.subscriber.id.length
+                                          )}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    {i.approved === false
+                                      ? "pending"
+                                      : "Approved"}
+                                  </td>
+                                  <td>{i.units}</td>
+                                  <td>
+                                    <div className="edit-delete-buttons">
+                                      <button
+                                        className="edit-subscriber-button"
+                                        onClick={() => {
+                                          handleOpen();
+                                          // setEditSubscriberData({
+                                          //   ...editSubscriberData,
+                                          //   sub_address:
+                                          //     showSubScribers[key].sub_address,
+                                          //   unit: showSubScribers[key].unit,
+                                          // });
+                                        }}
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="24px"
+                                          viewBox="0 0 24 24"
+                                          width="24px"
+                                          fill="#000000"
                                         >
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="24px"
-                                            viewBox="0 0 24 24"
-                                            width="24px"
-                                            fill="#000000"
-                                          >
-                                            <path
-                                              d="M0 0h24v24H0V0z"
-                                              fill="none"
-                                            />
-                                            <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                          </svg>
-                                        </button>
-                                        <button className="delete-subscriber-button">
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="24px"
-                                            viewBox="0 0 24 24"
-                                            width="24px"
-                                            fill="#000000"
-                                          >
-                                            <path
-                                              d="M0 0h24v24H0V0z"
-                                              fill="none"
-                                              opacity=".87"
-                                            />
-                                            <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm4.3 14.3c-.39.39-1.02.39-1.41 0L12 13.41 9.11 16.3c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41L10.59 12 7.7 9.11c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0L12 10.59l2.89-2.89c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L13.41 12l2.89 2.89c.38.38.38 1.02 0 1.41z" />
-                                          </svg>
-                                        </button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                );
-                              }
-                            )
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                          />
+                                          <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                        </svg>
+                                      </button>
+                                      <button className="delete-subscriber-button">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="24px"
+                                          viewBox="0 0 24 24"
+                                          width="24px"
+                                          fill="#000000"
+                                        >
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                            opacity=".87"
+                                          />
+                                          <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm4.3 14.3c-.39.39-1.02.39-1.41 0L12 13.41 9.11 16.3c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41L10.59 12 7.7 9.11c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0L12 10.59l2.89-2.89c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L13.41 12l2.89 2.89c.38.38.38 1.02 0 1.41z" />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
                           ) : (
                             <tr>
                               <td colSpan={3}>
@@ -381,7 +289,7 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
                       <button
                         className="distribute-agreement"
                         onClick={() => {
-                          setIndex(item.index);
+                          setIndex(item.indexId);
                           setAgreement(false);
                           setDistribute(true);
                         }}

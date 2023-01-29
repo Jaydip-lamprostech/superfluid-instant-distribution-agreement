@@ -5,6 +5,7 @@ import { useAccount, useSigner } from "wagmi";
 import { Framework } from "@superfluid-finance/sdk-core";
 import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { CONTRACT_ADDRESS } from "../config";
+import tokenImg from "../assets/token-default.webp";
 
 import "../styles/dashboard.scss";
 // import { useProvider } from "wagmi";
@@ -187,7 +188,7 @@ function Dashboard() {
                             >
                               <img
                                 alt="fDAIx token icon"
-                                src="https://raw.githubusercontent.com/superfluid-finance/assets/master/public//tokens/dai/icon.svg"
+                                src={tokenImg}
                                 className="MuiAvatar-img avatar-token"
                               ></img>
                             </div>

@@ -64,7 +64,7 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
       const data_ = `
     query {
       indexes(
-        where: {publisher_: {id: "0xb611e37650873e8f1e1dee69605a4fb1376dca78"},}
+        where: {publisher_: {id: "${address.toLowerCase()}"},}
       ) {
         publisher {
           id
@@ -92,7 +92,10 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
       const result1 = await c.query(data_).toPromise();
       // console.log("finalData");
       // console.log(result1.data.indexes[0].publisher.publishedIndexes);
-      let arr = result1.data.indexes[0].publisher.publishedIndexes;
+      let arr;
+      if (result1.data.indexes.length > 0) {
+        arr = result1.data.indexes[0].publisher.publishedIndexes;
+      }
       // console.log(arr);
       if (arr.length > indexArr.length) {
         for (let i = 0; i < arr.length; i++) {
@@ -109,68 +112,6 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
     };
     getIndexes();
   }, []);
-
-  useEffect(() => {
-    // const connectedContract = new ethers.Contract(
-    //   CONTRACT_ADDRESS,
-    //   Abi_IDA,
-    //   signer
-    // );
-    // const getIndex = async () => {
-    //   try {
-    //     const tx = await connectedContract.viewAddressIndex(address);
-    //     console.log(tx);
-    //     console.log(parseInt(tx[0]));
-    //     if (tx.length > indexArr.length)
-    //       tx.map((item, key) => {
-    //         indexArr.push(parseInt(item));
-    //         setDataLoaded(true);
-    //         return null;
-    //       });
-    //     console.log(indexArr);
-    //     const receipt = await tx.wait();
-    //     // console.log(receipt);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-    // getIndex();
-  });
-
-  // const getSubscriberUnits = async () => {
-  //   setSubUnitsLoading(true);
-  //   // console.log(address);
-  //   // console.log(signer);
-  //   // console.log(indexValue);
-  //   const sf = await Framework.create({
-  //     chainId: 5,
-  //     provider: provider,
-  //   });
-  //   //daix token loading
-  //   const daix = await sf.loadSuperToken("fDAIx");
-  //   for (let i = 0; i < subscribersAddress.length; i++) {
-  //     console.log(subscribersAddress[i]);
-  //     const getSub = await daix.getSubscription({
-  //       publisher: connectedContract.address,
-  //       indexId: indexValue,
-  //       subscriber: subscribersAddress[i],
-  //       providerOrSigner: signer,
-  //     });
-  //     console.log(getSub);
-  //     subscribersAddress[i] = {
-  //       address: subscribersAddress[i],
-  //       units: getSub.units,
-  //     };
-  //   }
-  //   setSubUnitsLoading(false);
-  //   // console.log(subscribersAddress);
-  //   // console.log(loading);
-  //   // setLoading(true);
-  // };
-
-  // useEffect(() => {
-  //   getSubscriberUnits();
-  // }, [indexValue]);
 
   return (
     <div className="db-sub">
@@ -252,7 +193,7 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
                   <tr>
                     <th>Subscribers</th>
                     <th>Units</th>
-                    <th>Approved/Pending</th>
+                    <th>Approval</th>
                     <th>Edit</th>
                   </tr>
                 </thead>

@@ -6,13 +6,16 @@ import "../styles/ida.scss";
 import { useAccount, useProvider, useSigner } from "wagmi";
 // import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ethers } from "ethers";
+import * as PushAPI from "@pushprotocol/restapi";
 
 import { Framework } from "@superfluid-finance/sdk-core";
 
 function IDAIndex() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const provider = useProvider();
-  const { data: signer } = useSigner();
+  const { data: signernew } = useSigner();
+
   // const [id, setId] = useState();
 
   const [loadingAnim, setLoadingAnim] = useState(false);
@@ -57,9 +60,10 @@ function IDAIndex() {
       });
       console.log(`Creating index ID:${id}...`);
 
-      const sign = await createIndexOperation.exec(signer);
+      const sign = await createIndexOperation.exec(signernew);
       const receipt = await sign.wait(sign);
       if (receipt) {
+        sendMessage(id);
         setLoadingAnim(false);
         setBtnContent(`Index No. ${id} Created`);
         setTimeout(() => {
@@ -77,6 +81,38 @@ function IDAIndex() {
       console.log(error);
     }
   };
+
+  // push notification
+
+  const PK = `${process.env.REACT_APP_PUSH_CHANNEL_PKEY}`;
+  const Pkey = `0x${PK}`;
+  const signer = new ethers.Wallet(Pkey);
+
+  // apiResponse?.status === 204, if sent successfully!
+  const sendMessage = async (index) => {
+    const apiResponse = await PushAPI.payloads.sendNotification({
+      signer,
+      type: 3, // target
+      identityType: 2, // direct payload
+      notification: {
+        title: "Superfluid IDA",
+        body: `An index id ${index} has been created by you`,
+      },
+      payload: {
+        title: "Superfluid IDA",
+        body: `An index id ${index} has been created by you`,
+        cta: "",
+        img: "",
+      },
+      recipients: `eip155:5:${address}`, // recipient address
+      channel: "eip155:5:0x070F992829575477A0E91D9D3e49dCFcd06d3C22", // your channel address
+      env: "staging",
+    });
+    if (apiResponse?.status === 204) {
+      console.log("Message sent successfully");
+    }
+  };
+
   return (
     <div className="db-main">
       <div className="db-sub">

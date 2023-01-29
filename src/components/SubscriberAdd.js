@@ -7,6 +7,7 @@ import { createClient } from "urql";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import * as PushAPI from "@pushprotocol/restapi";
 
 import { Framework } from "@superfluid-finance/sdk-core";
 
@@ -35,7 +36,7 @@ function SubscriberAdd() {
     const data_ = `
     query {
       indexes(
-        where: {publisher_: {id: "0xb611e37650873e8f1e1dee69605a4fb1376dca78"},}
+        where: {publisher_: {id: "${address.toLowerCase()}"},}
       ) {
         publisher {
           id
@@ -61,67 +62,28 @@ function SubscriberAdd() {
     const result1 = await c.query(data_).toPromise();
     console.log("finalData");
     // console.log(result1.data.indexes[0].publisher.publishedIndexes);
-    let arr = result1.data.indexes[0].publisher.publishedIndexes;
-    // console.log(arr);
-    if (arr.length > indexArr.length) {
-      for (let i = 0; i < arr.length; i++) {
-        indexArr.push(arr[i].indexId);
+    let arr;
+    if (result1.data.indexes.length > 0) {
+      arr = result1.data.indexes[0].publisher.publishedIndexes;
+      if (arr.length > indexArr.length) {
+        for (let i = 0; i < arr.length; i++) {
+          indexArr.push(arr[i].indexId);
+        }
       }
+      console.log(indexArr);
+      setDataLoaded(true);
     }
-    console.log(indexArr);
-    setDataLoaded(true);
+    // console.log(arr);
   };
 
   const provider = useProvider();
-  const { data: signer } = useSigner();
+  const { data: signernew } = useSigner();
 
-  const connectedContract = new ethers.Contract(
-    CONTRACT_ADDRESS,
-    Abi_IDA,
-    signer
-  );
-
-  // const getIndex = async () => {
-  //   try {
-  //     const tx = await connectedContract.viewAddressIndex(address);
-  //     // console.log(tx);
-  //     // console.log(parseInt(tx[0]));
-  //     if (tx.length > indexArr.length)
-  //       tx.map((item, key) => {
-  //         indexArr.push(parseInt(item));
-  //         setDataLoaded(true);
-  //         return null;
-  //       });
-  //     // console.log(indexArr);
-  //     await tx.wait();
-  //     // console.log(receipt);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const addSubscriber = async () => {
-  //   // console.log(subscriberDetails.address);
-  //   // console.log(subscriberDetails);
-  //   // console.log(indexValue);
-  //   setLoadingAnim(true);
-  //   try {
-  //     const tx = await connectedContract.gainShare(
-  //       subscriberDetails.address,
-  //       subscriberDetails.units,
-  //       indexValue
-  //     );
-  //     await tx.wait();
-  //     setLoadingAnim(false);
-  //     setBtnContent("Subscriber Added");
-  //     setTimeout(() => {
-  //       setBtnContent("Add Subscriber");
-  //     }, 3000);
-  //   } catch (error) {
-  //     console.log(error);
-  //     setLoadingAnim(false);
-  //   }
-  // };
+  // const connectedContract = new ethers.Contract(
+  //   CONTRACT_ADDRESS,
+  //   Abi_IDA,
+  //   signer
+  // );
 
   const addSubscriber = async () => {
     setLoadingAnim(true);
@@ -140,9 +102,10 @@ function SubscriberAdd() {
       });
       console.log(`Adding ${subscriberDetails.address} as subscriber...`);
 
-      const sign = await createIndexOperation.exec(signer);
+      const sign = await createIndexOperation.exec(signernew);
       const receipt = await sign.wait(sign);
       if (receipt) {
+        sendMessage(indexValue);
         setLoadingAnim(false);
         setBtnContent("Subscriber Added");
         setTimeout(() => {
@@ -157,10 +120,47 @@ function SubscriberAdd() {
     }
   };
 
+  // push notification
+
+  const PK = `${process.env.REACT_APP_PUSH_CHANNEL_PKEY}`;
+  const Pkey = `0x${PK}`;
+  const signer = new ethers.Wallet(Pkey);
+  console.log(signer);
+
+  // apiResponse?.status === 204, if sent successfully!
+  const sendMessage = async (index) => {
+    const receiver = document.getElementById("subscriberAdd").value;
+    // console.log(receiver);
+    // const flow = document.getElementById("flow").value;
+
+    const apiResponse = await PushAPI.payloads.sendNotification({
+      signer,
+      type: 3, // target
+      identityType: 2, // direct payload
+      notification: {
+        title: "Superfluid IDA",
+        body: "Stream started from contract to your account",
+      },
+      payload: {
+        title: "Superfluid IDA",
+        body: `You have been added as a subscriber by ${address}
+        on index id -> ${index}  `,
+        cta: "",
+        img: "",
+      },
+      recipients: `eip155:5:${receiver}`, // recipient address
+      channel: "eip155:5:0x070F992829575477A0E91D9D3e49dCFcd06d3C22", // your channel address
+      env: "staging",
+    });
+    if (apiResponse?.status === 204) {
+      console.log("Message sent successfully");
+    }
+  };
+
   useEffect(() => {
     // getIndex();
-    getIndexes();
-  }, []);
+    if (address) getIndexes();
+  }, [address]);
 
   return (
     <div className="db-sub">
@@ -227,6 +227,7 @@ function SubscriberAdd() {
             type="text"
             className="subscriber-input-index"
             placeholder="Subscriber Address"
+            id="subscriberAdd"
             onChange={(e) =>
               setSubscriberDetails({
                 ...subscriberDetails,

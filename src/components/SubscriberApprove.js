@@ -4,53 +4,85 @@ import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { useAccount, useProvider, useSigner } from "wagmi";
-import { CONTRACT_ADDRESS } from "../config";
+import { createClient } from "urql";
 
 function SubscriberApprove() {
   const provider = useProvider();
+  const { address } = useAccount();
   const { data: signer } = useSigner();
   const [indexNumber, setIndexNumber] = useState();
+  const [publisherAddress, setPublisherAddress] = useState();
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [btnContent, setBtnContent] = useState("Approve");
+  const [indexArr, setIndexArr] = useState([]);
 
-  const connectedContract = new ethers.Contract(
-    CONTRACT_ADDRESS,
-    Abi_IDA,
-    signer
-  );
+  // const connectedContract = new ethers.Contract(
+  //   CONTRACT_ADDRESS,
+  //   Abi_IDA,
+  //   signer
+  // );
 
-  const approveSubscriber = async () => {
+  // const approveSubscriber = async () => {
+  //   setLoadingAnim(true);
+  //   const sf = await Framework.create({
+  //     chainId: 5,
+  //     provider: provider,
+  //   });
+  //   const daix = await sf.loadSuperToken("fDAIx");
+
+  //   const subscribeOperation = daix.approveSubscription({
+  //     indexId: indexNumber,
+  //     publisher: connectedContract.address,
+  //   });
+  //   try {
+  //     const tx = await subscribeOperation.exec(signer);
+  //     await tx.wait();
+  //     setLoadingAnim(false);
+  //     setBtnContent("Approved");
+  //     setTimeout(() => {
+  //       setIndexNumber("");
+  //       setBtnContent("Approve");
+  //     }, 3000);
+  //     // if (receipt) {
+  //     //   console.log("approved!");
+  //     // }
+  //   } catch (err) {
+  //     if (
+  //       err.errorObject.errorObject.error.reason ===
+  //       "execution reverted: IDA: E_SUBS_APPROVED"
+  //     ) {
+  //       console.log("shareGainer already approved subscription. moving on ->");
+  //     }
+  //   }
+  // };
+
+  const approveSubscription = async () => {
     setLoadingAnim(true);
     const sf = await Framework.create({
       chainId: 5,
       provider: provider,
     });
-    const daix = await sf.loadSuperToken("fDAIx");
 
-    const subscribeOperation = daix.approveSubscription({
-      indexId: indexNumber,
-      publisher: connectedContract.address,
-    });
+    const daix = await sf.loadSuperToken("fDAIx");
     try {
+      const subscribeOperation = daix.approveSubscription({
+        indexId: `${indexNumber}`,
+        publisher: publisherAddress,
+      });
       const tx = await subscribeOperation.exec(signer);
-      await tx.wait();
-      setLoadingAnim(false);
-      setBtnContent("Approved");
-      setTimeout(() => {
-        setIndexNumber("");
-        setBtnContent("Approve");
-      }, 3000);
-      // if (receipt) {
-      //   console.log("approved!");
-      // }
-    } catch (err) {
-      if (
-        err.errorObject.errorObject.error.reason ===
-        "execution reverted: IDA: E_SUBS_APPROVED"
-      ) {
-        console.log("shareGainer already approved subscription. moving on ->");
+      const receipt = await tx.wait();
+      if (receipt) {
+        setLoadingAnim(false);
+        setBtnContent("Approved");
+        setTimeout(() => {
+          setIndexNumber("");
+          setBtnContent("Approve");
+        }, 3000);
+        console.log("approved!");
       }
+    } catch (err) {
+      console.log(err);
     }
   };
   return (
@@ -87,6 +119,14 @@ function SubscriberApprove() {
             onChange={(e) => setIndexNumber(e.target.value)}
           />
         </div>
+        <div className="subscriber-input-div">
+          <input
+            type="text"
+            className="subscriber-input-index"
+            placeholder="Enter Publisher Address"
+            onChange={(e) => setPublisherAddress(e.target.value.toLowerCase())}
+          />
+        </div>
         {/* <h3>Subscriber Address</h3> */}
         {/* <div className="subscriber-input-div">
           <input
@@ -99,7 +139,7 @@ function SubscriberApprove() {
         {/* <h3>Unit</h3> */}
 
         <div className="subscriber-add-btn">
-          <button onClick={() => approveSubscriber()}>
+          <button onClick={() => approveSubscription()}>
             {loadingAnim ? <span className="loader"></span> : btnContent}
           </button>
         </div>
