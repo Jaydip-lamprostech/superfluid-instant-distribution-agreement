@@ -10,6 +10,9 @@ import tokenImg from "../assets/token-default.webp";
 import "../styles/dashboard.scss";
 // import { useProvider } from "wagmi";
 import { ethers } from "ethers";
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+// await provider.send("eth_requestAccounts", []);
+const signer = provider.getSigner();
 
 function Dashboard() {
   const { address, isConnected } = useAccount();
@@ -18,8 +21,8 @@ function Dashboard() {
 
   const [weiToken] = useState("1000000000000000000000");
 
-  const provider = useProvider();
-  const { data: signer } = useSigner();
+  // const provider = useProvider();
+  // const { data: signer } = useSigner();
 
   const connectedContract = new ethers.Contract(
     CONTRACT_ADDRESS,
@@ -40,43 +43,44 @@ function Dashboard() {
     }
   };
 
-  const getBalance = async () => {
-    const sf = await Framework.create({
-      chainId: 5,
-      provider: provider,
-    });
-    const daix = await sf.loadSuperToken("fDAIx");
-    console.log("fDAIx balance...");
-    try {
-      const daixBalance = await daix.balanceOf({
-        account: address,
-        providerOrSigner: signer,
-      });
-      console.log(daixBalance);
-      setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    const getFunds = async () => {
-      try {
-        const tx = await connectedContract.viewAddressStake();
-        console.log(tx);
-        if (tx) setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getFunds();
-  }, []);
+  // useEffect(() => {
+  //   const getFunds = async () => {
+  //     try {
+  //       const tx = await connectedContract.viewAddressStake();
+  //       console.log(tx);
+  //       if (tx) setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   getFunds();
+  // }, []);
 
   useEffect(() => {
     if (address) {
+      const getBalance = async () => {
+        const sf = await Framework.create({
+          chainId: 5,
+          provider: provider,
+        });
+        const daix = await sf.loadSuperToken("fDAIx");
+        console.log("fDAIx balance...");
+        try {
+          const daixBalance = await daix.balanceOf({
+            account: address,
+            providerOrSigner: signer,
+          });
+          console.log(daixBalance);
+          setTokenBalance(
+            parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5)
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      };
       getBalance();
     }
-  }, [address, getBalance, isConnected]);
+  }, [address, isConnected]);
 
   if (isConnected) {
     return (
