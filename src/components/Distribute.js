@@ -12,6 +12,7 @@ import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { createClient } from "urql";
+import Web3 from "web3";
 
 function Distribute({ index }) {
   const { address } = useAccount();
@@ -23,6 +24,8 @@ function Distribute({ index }) {
   const [loading, setLoading] = useState(true);
   const [maxToken, setMaxToken] = useState();
   const [totalUnits, setTotalUnits] = useState(0);
+
+  const [showupdateIndexValue, setUpdateIndexValue] = useState();
   // let totalUnits = 0;
   // const [totalUnitsArr, setTotalUnitsArr] = useState([]);
 
@@ -40,11 +43,35 @@ function Distribute({ index }) {
   const provider = useProvider();
   const { data: signer } = useSigner();
 
-  const connectedContract = new ethers.Contract(
-    CONTRACT_ADDRESS,
-    Abi_IDA,
-    signer
-  );
+  const updateIndexValue = async () => {
+    setLoadingAnim(true);
+
+    console.log("Inside updateIndexValue() function");
+
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    const daix = await sf.loadSuperToken("fDAIx");
+    try {
+      const createIndexOperation = daix.updateIndexValue({
+        indexId: indexValue.toString(),
+        indexValue: showupdateIndexValue.toString(),
+      });
+      console.log("updateing your Index value...");
+
+      const sign = await createIndexOperation.exec(signer);
+      const receipt = await sign.wait(sign);
+      if (receipt) {
+        setLoadingAnim(false);
+        console.log(
+          `Value is Updated for the Index ID: ${showupdateIndexValue}`
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const distributeFunds = async () => {
     setLoadingAnim(true);
@@ -155,24 +182,44 @@ function Distribute({ index }) {
           temp.push(arr[i]);
         }
       }
-      console.log(temp);
+      // console.log(temp);
       setDataLoaded(true);
     };
     getIndexes();
+    const getIndexData = async () => {
+      const sf = await Framework.create({
+        chainId: 5,
+        provider: provider,
+      });
+      const daix = await sf.loadSuperToken("fDAIx");
+      try {
+        let res = await daix.getIndex({
+          publisher: address,
+          indexId: indexValue.toString(),
+          providerOrSigner: signer,
+        });
+        console.log(res);
+        const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
+        setMaxToken(eth);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getIndexData();
   }, [indexValue]);
 
-  const getFunds = async () => {
-    try {
-      const tx = await connectedContract.viewAddressStake();
-      console.log(tx);
-      setMaxToken(parseFloat(tx / Math.pow(10, 18)).toFixed(2));
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const getFunds = async () => {
+  //   try {
+  //     const tx = await connectedContract.viewAddressStake();
+  //     console.log(tx);
+  //     setMaxToken(parseFloat(tx / Math.pow(10, 18)).toFixed(2));
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   useEffect(() => {
-    getFunds();
+    // getFunds();
     if (index) {
       setUnits(index);
     }
@@ -253,7 +300,30 @@ function Distribute({ index }) {
                 }}
               />
             </div>
-            <h4>Token Balance: {maxToken} Wei</h4>
+            <h4>Token Balance: {maxToken} ETH</h4>
+            {maxToken === "0" ? (
+              <>
+                <div className="subscriber-input-div">
+                  <input
+                    type="number"
+                    className="subscriber-input-index"
+                    placeholder="Enter Token in Wei"
+                    onChange={(e) => {
+                      setUpdateIndexValue(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="distribute-btn">
+                  <button onClick={() => updateIndexValue()}>
+                    {loadingAnim ? (
+                      <span className="loader"></span>
+                    ) : (
+                      "Update Index Value"
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : null}
             <h2 className="distribute-h2">Distribution</h2>
             <div className="distribute-subscribers-list">
               <table>
