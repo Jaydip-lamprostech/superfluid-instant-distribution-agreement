@@ -71,7 +71,7 @@ function Dashboard() {
       }
     };
     getFunds();
-  });
+  }, []);
 
   if (isConnected) {
     return (
