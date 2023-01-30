@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Skeleton } from "@mui/material";
+import { Fade, Modal, Skeleton } from "@mui/material";
 
 import { FormControl, MenuItem, Select } from "@mui/material";
 import Blokies from "./Blokies";
+import Backdrop from "@mui/material/Backdrop";
 
 import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { ethers } from "ethers";
@@ -10,6 +11,8 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { CONTRACT_ADDRESS } from "../config";
 import { createClient } from "urql";
+import { Box } from "@mui/system";
+import EditSubscriber from "./EditSubscriber";
 
 function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
   const { address, isConnected } = useAccount();
@@ -25,6 +28,15 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [showNewLoading, setNewLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [editSubscriberData, setEditSubscriberData] = useState({
+    index: "",
+    sub_address: "",
+    unit: 0,
+  });
+
   // const [amount, setAmount] = useState();
 
   const handleChange = (e) => {
@@ -43,7 +55,8 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
       if (temp[i].indexId === String(e)) {
         if (temp[i].subscriptions.length > subscribersAddress.length) {
           for (let j = 0; j < temp[i].subscriptions.length; j++) {
-            subscribersAddress.push(temp[i].subscriptions[j]);
+            if (temp[i].subscriptions[j].units !== "0")
+              subscribersAddress.push(temp[i].subscriptions[j]);
           }
         }
       }
@@ -55,7 +68,18 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
 
   const provider = useProvider();
   const { data: signer } = useSigner();
-
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "auto",
+    height: "auto",
+    bgcolor: "#fff",
+    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+    borderRadius: "20px",
+    p: 4,
+  };
   useEffect(() => {
     const getIndexes = async () => {
       const API =
@@ -112,6 +136,29 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
     };
     getIndexes();
   }, []);
+
+  const deleteSubscription = async (index, subAddress) => {
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+
+    const daix = await sf.loadSuperToken("fDAIx");
+    try {
+      const subscribeOperation = daix.deleteSubscription({
+        indexId: index.toString(),
+        subscriber: subAddress.toString(),
+        publisher: address,
+      });
+      const tx = await subscribeOperation.exec(signer);
+      const receipt = await tx.wait();
+      if (receipt) {
+        console.log("SUBSCRIBER DELETED!");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="db-sub">
@@ -240,7 +287,18 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
                             </td>
                             <td>
                               <div className="edit-delete-buttons">
-                                <button className="edit-subscriber-button">
+                                <button
+                                  className="edit-subscriber-button"
+                                  onClick={() => {
+                                    handleOpen();
+                                    setEditSubscriberData({
+                                      ...editSubscriberData,
+                                      sub_address: item.subscriber.id,
+                                      unit: item.units,
+                                      index: indexValue,
+                                    });
+                                  }}
+                                >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     height="24px"
@@ -252,7 +310,15 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
                                     <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                                   </svg>
                                 </button>
-                                <button className="delete-subscriber-button">
+                                <button
+                                  className="delete-subscriber-button"
+                                  onClick={() =>
+                                    deleteSubscription(
+                                      indexValue,
+                                      item.subscriber.id
+                                    )
+                                  }
+                                >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     height="24px"
@@ -311,6 +377,23 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
         {/* <div className="distribute-btn">
           <button>Distribute</button>
         </div> */}
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={open}>
+            <Box sx={style}>
+              <EditSubscriber editSubscriberData={editSubscriberData} />
+            </Box>
+          </Fade>
+        </Modal>
       </div>
     </div>
   );

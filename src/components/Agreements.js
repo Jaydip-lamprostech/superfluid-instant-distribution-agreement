@@ -36,7 +36,7 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
   const handleClose = () => setOpen(false);
 
   const [editSubscriberData, setEditSubscriberData] = useState({
-    index: 48986,
+    index: "",
     sub_address: "",
     unit: 0,
   });
@@ -130,6 +130,29 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
     if (address) getIndexes();
     getFunds();
   }, [address]);
+
+  const deleteSubscription = async (index, subAddress) => {
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+
+    const daix = await sf.loadSuperToken("fDAIx");
+    try {
+      const subscribeOperation = daix.deleteSubscription({
+        indexId: index.toString(),
+        subscriber: subAddress.toString(),
+        publisher: address,
+      });
+      const tx = await subscribeOperation.exec(signer);
+      const receipt = await tx.wait();
+      if (receipt) {
+        console.log("SUBSCRIBER DELETED!");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   if (!isConnected)
     return (
@@ -229,12 +252,12 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
                                         className="edit-subscriber-button"
                                         onClick={() => {
                                           handleOpen();
-                                          // setEditSubscriberData({
-                                          //   ...editSubscriberData,
-                                          //   sub_address:
-                                          //     showSubScribers[key].sub_address,
-                                          //   unit: showSubScribers[key].unit,
-                                          // });
+                                          setEditSubscriberData({
+                                            ...editSubscriberData,
+                                            sub_address: i.subscriber.id,
+                                            unit: i.units,
+                                            index: item.indexId,
+                                          });
                                         }}
                                       >
                                         <svg
@@ -251,7 +274,15 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
                                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                                         </svg>
                                       </button>
-                                      <button className="delete-subscriber-button">
+                                      <button
+                                        className="delete-subscriber-button"
+                                        onClick={() =>
+                                          deleteSubscription(
+                                            item.indexId,
+                                            i.subscriber.id
+                                          )
+                                        }
+                                      >
                                         <svg
                                           xmlns="http://www.w3.org/2000/svg"
                                           height="24px"

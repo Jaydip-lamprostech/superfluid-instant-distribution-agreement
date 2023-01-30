@@ -17,4 +17,37 @@
     font-size: 1rem;
     font-weight: 600;
   }
+  h3 {
+    margin: 20px 0px;
+  }
+  span {
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+  input {
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: 2px solid #10bb35;
+    box-shadow: none;
+    // outline: auto;
+  }
+
+  button.edit-button {
+    margin: 20px 0px;
+    // pointer-events: none;
+    padding: 10px 20px;
+    color: white;
+    background-color: #10bb35;
+    border: none;
+    border-radius: 10px;
+    box-shadow: none;
+    line-height: 1.275;
+    font-size: 1rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 100;
+  }
 }
