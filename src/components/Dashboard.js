@@ -1,7 +1,7 @@
 import { Skeleton } from "@mui/material";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useEffect, useState } from "react";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount, useProvider, useSigner } from "wagmi";
 import { Framework } from "@superfluid-finance/sdk-core";
 import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { CONTRACT_ADDRESS } from "../config";
@@ -12,13 +12,13 @@ import "../styles/dashboard.scss";
 import { ethers } from "ethers";
 
 function Dashboard() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const [loading, setLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState();
 
   const [weiToken] = useState("1000000000000000000000");
 
-  // const provider = useProvider();
+  const provider = useProvider();
   const { data: signer } = useSigner();
 
   const connectedContract = new ethers.Contract(
@@ -40,27 +40,27 @@ function Dashboard() {
     }
   };
 
-  // const getBalance = async () => {
-  //   const sf = await Framework.create({
-  //     chainId: 5,
-  //     provider: provider,
-  //   });
-  //   const daix = await sf.loadSuperToken("fDAIx");
-  //   console.log("fDAIx balance...");
-  //   try {
-  //     const daixBalance = await daix.balanceOf({
-  //       account: connectedContract.address,
-  //       providerOrSigner: signer,
-  //     });
-  //     console.log(daixBalance);
-  //     setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const getBalance = async () => {
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    const daix = await sf.loadSuperToken("fDAIx");
+    console.log("fDAIx balance...");
+    try {
+      const daixBalance = await daix.balanceOf({
+        account: address,
+        providerOrSigner: signer,
+      });
+      console.log(daixBalance);
+      setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    // getBalance();
+    getBalance();
     const getFunds = async () => {
       try {
         const tx = await connectedContract.viewAddressStake();
