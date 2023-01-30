@@ -60,7 +60,6 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    getBalance();
     const getFunds = async () => {
       try {
         const tx = await connectedContract.viewAddressStake();
@@ -72,6 +71,12 @@ function Dashboard() {
     };
     getFunds();
   }, []);
+
+  useEffect(() => {
+    if (address) {
+      getBalance();
+    }
+  }, [address, getBalance, isConnected]);
 
   if (isConnected) {
     return (
