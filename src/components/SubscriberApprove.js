@@ -123,9 +123,10 @@ function SubscriberApprove() {
 
     const daix = await sf.loadSuperToken("fDAIx");
     try {
+      console.log(publisher);
       const subscribeOperation = daix.approveSubscription({
-        indexId: `${indexNumber}`,
-        publisher: publisherAddress,
+        indexId: indexValue.toString(),
+        publisher: publisher.toString(),
       });
       const tx = await subscribeOperation.exec(signer);
       const receipt = await tx.wait();

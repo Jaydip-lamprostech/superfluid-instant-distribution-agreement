@@ -76,30 +76,32 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
 
     const data_ = `
-  query {
-    indexes(
-      where: {publisher_: {id: "${address.toLowerCase()}"},}
-    ) {
-      publisher {
-        id
-        publishedIndexes {
-          indexValue
-          indexId
-          totalUnits
-          totalUnitsPending
-          totalUnitsApproved
-          subscriptions {
-            subscriber {
-              id
+    query {
+      indexes(
+        where: {publisher_: {id: "${address.toLowerCase()}"}}
+        
+      ) {
+        publisher {
+          id
+          publishedIndexes(orderDirection: desc, orderBy: createdAtTimestamp) {
+            indexValue
+            indexId
+            totalUnits
+            totalUnitsPending
+            totalUnitsApproved
+            subscriptions {
+              subscriber {
+                id
+              }
+              approved
+              units
             }
-            approved
-            units
           }
         }
       }
     }
-  }
 `;
+
     const c = createClient({
       url: API,
     });
