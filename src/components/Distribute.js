@@ -31,6 +31,7 @@ function Distribute({ index }) {
   // const [totalUnitsArr, setTotalUnitsArr] = useState([]);
 
   const [loadingAnim, setLoadingAnim] = useState(false);
+  const [loadingAnim2, setLoadingAnim2] = useState(false);
   const [btnContent, setBtnContent] = useState("Distribute");
 
   // let totalUnits = 0;
@@ -45,7 +46,7 @@ function Distribute({ index }) {
   const { data: signer } = useSigner();
 
   const updateIndexValue = async () => {
-    setLoadingAnim(true);
+    setLoadingAnim2(true);
 
     console.log("Inside updateIndexValue() function");
 
@@ -66,13 +67,14 @@ function Distribute({ index }) {
       if (receipt) {
         const eth = Web3.utils.fromWei(`${showupdateIndexValue}`, "ether");
         setMaxToken(eth);
-        setLoadingAnim(false);
+        setLoadingAnim2(false);
         console.log(
           `Value is Updated for the Index ID: ${showupdateIndexValue}`
         );
       }
     } catch (error) {
       console.log(error);
+      setLoadingAnim2(false);
     }
   };
 
@@ -101,6 +103,7 @@ function Distribute({ index }) {
       }
     } catch (err) {
       console.log(err);
+      setLoadingAnim(false);
     }
   };
 
@@ -292,7 +295,7 @@ function Distribute({ index }) {
             <input
               type="number"
               className="subscriber-input-index"
-              placeholder="Enter Token value in ETH"
+              placeholder="Enter Token value in fDAIx"
               min={maxToken}
               onChange={(e) => {
                 // if (e.target.value < maxToken) {
@@ -306,11 +309,11 @@ function Distribute({ index }) {
           </div>
           <h4>
             Token Balance: {maxToken ? parseFloat(maxToken).toFixed(5) : "0"}{" "}
-            ETH
+            fDAIx
           </h4>
           <div className="distribute-btn">
             <button onClick={() => updateIndexValue()}>
-              {loadingAnim ? (
+              {loadingAnim2 ? (
                 <span className="loader"></span>
               ) : (
                 "Update Index Value"
@@ -323,7 +326,7 @@ function Distribute({ index }) {
             <input
               type="number"
               className="subscriber-input-index"
-              placeholder="Enter Token in ETH to distribute"
+              placeholder="Enter Token in fDAIx to distribute"
               max={maxToken}
               onChange={(e) => {
                 setAmount(e.target.value);
