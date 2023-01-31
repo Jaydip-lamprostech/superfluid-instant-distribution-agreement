@@ -292,7 +292,7 @@ function Distribute({ index }) {
             <input
               type="number"
               className="subscriber-input-index"
-              placeholder="Enter Token in Wei"
+              placeholder="Enter Token value in ETH"
               min={maxToken}
               onChange={(e) => {
                 // if (e.target.value < maxToken) {

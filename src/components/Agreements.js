@@ -9,12 +9,12 @@ import EditSubscriber from "./EditSubscriber";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { ethers } from "ethers";
 
-import Abi_IDA from "../artifacts/Abi_IDA.json";
 import { Framework } from "@superfluid-finance/sdk-core";
-import { CONTRACT_ADDRESS } from "../config";
+
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Skeleton } from "@mui/material";
 import { createClient } from "urql";
+import Web3 from "web3";
 
 function Agreements({ setAgreement, setDistribute, setIndex }) {
   const { address, isConnected } = useAccount();
@@ -58,22 +58,18 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
   const { data: signer } = useSigner();
   const [temp, setTemp] = useState([]);
   const [dataloaded, setDataLoaded] = useState(false);
+  const [indexValue, setIndexValue] = useState("");
 
-  const connectedContract = new ethers.Contract(
-    CONTRACT_ADDRESS,
-    Abi_IDA,
-    signer
-  );
+  // const getFunds = async () => {
+  //   try {
 
-  const getFunds = async () => {
-    try {
-      const tx = await connectedContract.viewAddressStake();
-      // console.log(tx);
-      setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //     const tx = await connectedContract.viewAddressStake();
+  //     // console.log(tx);
+  //     setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const getIndexes = async () => {
     const API =
@@ -117,18 +113,14 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
         indexArr.push(arr[i]);
       }
     }
-    if (arr.length > temp.length) {
-      for (let i = 0; i < arr.length; i++) {
-        temp.push(arr[i]);
-      }
-    }
+
     // console.log(indexArr);
     setDataLoaded(true);
   };
 
   useEffect(() => {
     if (address) getIndexes();
-    getFunds();
+    // getIndexData();
   }, [address]);
 
   const deleteSubscription = async (index, subAddress) => {
@@ -207,7 +199,10 @@ function Agreements({ setAgreement, setDistribute, setIndex }) {
                       <span className="agreement-number-span">
                         Amount -
                         <span className="agreement-number">
-                          {parseFloat(tokenBalance).toFixed(2)} Wei
+                          {parseFloat(
+                            Web3.utils.fromWei(`${item.indexValue}`, "ether")
+                          ).toFixed(4)}{" "}
+                          fDAIx
                         </span>
                       </span>
                     </div>
