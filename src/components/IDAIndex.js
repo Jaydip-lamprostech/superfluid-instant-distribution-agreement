@@ -11,7 +11,7 @@ import * as PushAPI from "@pushprotocol/restapi";
 
 import { Framework } from "@superfluid-finance/sdk-core";
 
-function IDAIndex() {
+function IDAIndex({ setIDA, setSubscriber }) {
   const { address, isConnected } = useAccount();
   const provider = useProvider();
   const { data: signernew } = useSigner();
@@ -69,6 +69,8 @@ function IDAIndex() {
         setTimeout(() => {
           setBtnContent("Create Index");
         }, 4000);
+        setIDA(false);
+        setSubscriber(true);
         console.log(
           `Congrats - you've just created a new Index!
              Network: Goerli

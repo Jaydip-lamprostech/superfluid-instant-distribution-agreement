@@ -333,7 +333,7 @@ function LandingPage() {
           {showDashboard ? (
             <Dashboard />
           ) : showIDA ? (
-            <IDAIndex />
+            <IDAIndex setIDA={setIDA} setSubscriber={setSubscriber} />
           ) : showSubscriber ? (
             <Subscriber />
           ) : showAgreement ? (

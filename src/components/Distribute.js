@@ -26,6 +26,7 @@ function Distribute({ index }) {
   const [totalUnits, setTotalUnits] = useState(0);
 
   const [showupdateIndexValue, setUpdateIndexValue] = useState();
+  // console.log(setUpdateIndexValue);
   // let totalUnits = 0;
   // const [totalUnitsArr, setTotalUnitsArr] = useState([]);
 
@@ -63,6 +64,8 @@ function Distribute({ index }) {
       const sign = await createIndexOperation.exec(signer);
       const receipt = await sign.wait(sign);
       if (receipt) {
+        const eth = Web3.utils.fromWei(`${showupdateIndexValue}`, "ether");
+        setMaxToken(eth);
         setLoadingAnim(false);
         console.log(
           `Value is Updated for the Index ID: ${showupdateIndexValue}`
@@ -186,28 +189,32 @@ function Distribute({ index }) {
       setDataLoaded(true);
     };
     getIndexes();
-    const getIndexData = async () => {
-      const sf = await Framework.create({
-        chainId: 5,
-        provider: provider,
-      });
-      const daix = await sf.loadSuperToken("fDAIx");
-      try {
-        let res = await daix.getIndex({
-          publisher: address,
-          indexId: indexValue.toString(),
-          providerOrSigner: signer,
-        });
-        console.log(res);
-        const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
-        setMaxToken(eth);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getIndexData();
-  }, [indexValue]);
+  }, []);
 
+  useEffect(() => {
+    if (indexValue) {
+      const getIndexData = async () => {
+        const sf = await Framework.create({
+          chainId: 5,
+          provider: provider,
+        });
+        const daix = await sf.loadSuperToken("fDAIx");
+        try {
+          let res = await daix.getIndex({
+            publisher: address.toString(),
+            indexId: indexValue.toString(),
+            providerOrSigner: signer,
+          });
+          console.log(res);
+          const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
+          setMaxToken(eth);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      getIndexData();
+    }
+  }, [indexValue, index]);
   // const getFunds = async () => {
   //   try {
   //     const tx = await connectedContract.viewAddressStake();
@@ -218,250 +225,221 @@ function Distribute({ index }) {
   //   }
   // };
 
-  useEffect(() => {
-    // getFunds();
-    if (index) {
-      setUnits(index);
-    }
-  }, []);
-
-  if (maxToken)
-    return (
-      <div className="db-main">
-        <div className="db-sub">
-          <h1 className="distribute-h1">Distribute</h1>
-          <p className="distribute-p">
-            Takes the specified amount of Super Tokens from the sender's account
-            and distributes them to all receivers
-          </p>
-          <div className="distribute-box">
-            <div className="distribution-select-index">
-              <FormControl required fullWidth>
-                {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
-                <Select
-                  displayEmpty
-                  id="demo-simple-select"
-                  value={indexValue}
-                  onChange={(e) => handleChange(e.target.value)}
-                  sx={{
-                    margin: "10px 0px",
-                    color: "rgba(18, 20, 30, 0.87)",
-                    fontSize: "1rem",
-                    padding: "0px 5px",
-                    ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-                      {
-                        minHeight: "auto",
-                      },
-                    ".MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(224, 224, 224)",
-                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                      borderRadius: "15px",
+  return (
+    <div className="db-main">
+      <div className="db-sub">
+        <h1 className="distribute-h1">Distribute</h1>
+        <p className="distribute-p">
+          Takes the specified amount of Super Tokens from the sender's account
+          and distributes them to all receivers
+        </p>
+        <div className="distribute-box">
+          <div className="distribution-select-index">
+            <FormControl required fullWidth>
+              {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+              <Select
+                displayEmpty
+                id="demo-simple-select"
+                value={indexValue}
+                onChange={(e) => handleChange(e.target.value)}
+                sx={{
+                  margin: "10px 0px",
+                  color: "rgba(18, 20, 30, 0.87)",
+                  fontSize: "1rem",
+                  padding: "0px 5px",
+                  ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
+                    {
+                      minHeight: "auto",
                     },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(224, 224, 224)",
-                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                      borderRadius: "15px",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(224, 224, 224)",
-                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                      borderRadius: "15px",
-                    },
-                    ".MuiSvgIcon-root ": {
-                      fill: "black",
-                    },
-                  }}
-                  inputProps={{ "aria-label": "Without label" }}
-                >
-                  <MenuItem disabled value="">
-                    <h4 className="index-placeholder">Select Index</h4>
-                  </MenuItem>
-                  {dataloaded
-                    ? indexArr.map((item, key) => {
-                        return (
-                          <MenuItem value={item} key={key}>
-                            {item}
-                          </MenuItem>
-                        );
-                      })
-                    : null}
-                </Select>
-              </FormControl>
-            </div>
-
-            <div className="subscriber-input-div">
-              <input
-                type="number"
-                className="subscriber-input-index"
-                placeholder="Enter Token in ETH"
-                max={maxToken}
-                onChange={(e) => {
-                  setAmount(e.target.value);
+                  ".MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(224, 224, 224)",
+                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                    borderRadius: "15px",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(224, 224, 224)",
+                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                    borderRadius: "15px",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(224, 224, 224)",
+                    boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                    borderRadius: "15px",
+                  },
+                  ".MuiSvgIcon-root ": {
+                    fill: "black",
+                  },
                 }}
-              />
-            </div>
-            <h4>Token Balance: {maxToken} ETH</h4>
-            {maxToken === "0" ? (
-              <>
-                <div className="subscriber-input-div">
-                  <input
-                    type="number"
-                    className="subscriber-input-index"
-                    placeholder="Enter Token in Wei"
-                    onChange={(e) => {
-                      setUpdateIndexValue(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="distribute-btn">
-                  <button onClick={() => updateIndexValue()}>
-                    {loadingAnim ? (
-                      <span className="loader"></span>
-                    ) : (
-                      "Update Index Value"
-                    )}
-                  </button>
-                </div>
-              </>
-            ) : null}
-            <h2 className="distribute-h2">Distribution</h2>
-            <div className="distribute-subscribers-list">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Subscribers</th>
-                    <th>Units</th>
-                    <th>Approval</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* ******** table data map ********** */}
+                inputProps={{ "aria-label": "Without label" }}
+              >
+                <MenuItem disabled value="">
+                  <h4 className="index-placeholder">Select Index</h4>
+                </MenuItem>
+                {dataloaded
+                  ? indexArr.map((item, key) => {
+                      return (
+                        <MenuItem value={item} key={key}>
+                          {item}
+                        </MenuItem>
+                      );
+                    })
+                  : null}
+              </Select>
+            </FormControl>
+          </div>
 
-                  {indexValue ? (
-                    !showNewLoading ? (
-                      subscribersAddress.map((item, key) => {
-                        return (
-                          <tr key={key}>
-                            <td>
-                              {item.subscriber.id ? (
-                                <div className="blokies-and-address">
-                                  <Blokies />
-                                  <span className="subscriber-address">
-                                    {item.subscriber.id.substring(0, 8) +
-                                      "..." +
-                                      item.subscriber.id.substring(
-                                        item.subscriber.id.length - 6,
-                                        item.subscriber.id.length
-                                      )}
-                                  </span>
-                                </div>
-                              ) : (
-                                <Skeleton
-                                  animation="wave"
-                                  variant="rounded"
-                                  sx={{ bgcolor: "grey.100" }}
-                                />
-                              )}
-                            </td>
-                            <td>{item.units}</td>
-                            <td>
-                              {item.approved === true ? "Approved" : "Pending"}
-                            </td>
-                            <td>
-                              {/* {totalUnits} */}
-                              {amount && totalUnits
-                                ? parseFloat(
-                                    (amount / totalUnits) * item.units
-                                  ).toFixed(2)
-                                : "-"}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td>
-                          <Skeleton
-                            animation="wave"
-                            variant="rounded"
-                            sx={{ bgcolor: "grey.100" }}
-                          />
-                        </td>
-                        <td>
-                          <Skeleton
-                            animation="wave"
-                            variant="rounded"
-                            sx={{ bgcolor: "grey.100" }}
-                          />
-                        </td>
-                        <td>
-                          <Skeleton
-                            animation="wave"
-                            variant="rounded"
-                            sx={{ bgcolor: "grey.100" }}
-                          />
-                        </td>
-                        <td>
-                          <Skeleton
-                            animation="wave"
-                            variant="rounded"
-                            sx={{ bgcolor: "grey.100" }}
-                          />
-                        </td>
-                      </tr>
-                    )
+          <div className="subscriber-input-div">
+            <input
+              type="number"
+              className="subscriber-input-index"
+              placeholder="Enter Token in Wei"
+              min={maxToken}
+              onChange={(e) => {
+                // if (e.target.value < maxToken) {
+                //   alert(`Enter value greater than $(e.target.value) value`);
+                // }
+                setUpdateIndexValue(
+                  ethers.utils.parseEther(e.target.value.toString())
+                );
+              }}
+            />
+          </div>
+          <h4>
+            Token Balance: {maxToken ? parseFloat(maxToken).toFixed(5) : "0"}{" "}
+            ETH
+          </h4>
+          <div className="distribute-btn">
+            <button onClick={() => updateIndexValue()}>
+              {loadingAnim ? (
+                <span className="loader"></span>
+              ) : (
+                "Update Index Value"
+              )}
+            </button>
+          </div>
+
+          <h2 className="distribute-h2">Distribution</h2>
+          <div className="subscriber-input-div">
+            <input
+              type="number"
+              className="subscriber-input-index"
+              placeholder="Enter Token in ETH to distribute"
+              max={maxToken}
+              onChange={(e) => {
+                setAmount(e.target.value);
+              }}
+            />
+          </div>
+          <div className="distribute-subscribers-list">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subscribers</th>
+                  <th>Units</th>
+                  <th>Approval</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* ******** table data map ********** */}
+
+                {indexValue ? (
+                  !showNewLoading ? (
+                    subscribersAddress.map((item, key) => {
+                      return (
+                        <tr key={key}>
+                          <td>
+                            {item.subscriber.id ? (
+                              <div className="blokies-and-address">
+                                <Blokies />
+                                <span className="subscriber-address">
+                                  {item.subscriber.id.substring(0, 8) +
+                                    "..." +
+                                    item.subscriber.id.substring(
+                                      item.subscriber.id.length - 6,
+                                      item.subscriber.id.length
+                                    )}
+                                </span>
+                              </div>
+                            ) : (
+                              <Skeleton
+                                animation="wave"
+                                variant="rounded"
+                                sx={{ bgcolor: "grey.100" }}
+                              />
+                            )}
+                          </td>
+                          <td>{item.units}</td>
+                          <td>
+                            {item.approved === true ? "Approved" : "Pending"}
+                          </td>
+                          <td>
+                            {/* {totalUnits} */}
+                            {amount && totalUnits
+                              ? parseFloat(
+                                  (amount / totalUnits) * item.units
+                                ).toFixed(2)
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
-                      <td colSpan={4} style={{ textAlign: "center" }}>
-                        Select Index to display subscribers
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
+                      </td>
+                      <td>
+                        <Skeleton
+                          animation="wave"
+                          variant="rounded"
+                          sx={{ bgcolor: "grey.100" }}
+                        />
                       </td>
                     </tr>
-                  )}
-                  {}
-                  {/* ******** table data map ********** */}
+                  )
+                ) : (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: "center" }}>
+                      Select Index to display subscribers
+                    </td>
+                  </tr>
+                )}
+                {}
+                {/* ******** table data map ********** */}
 
-                  {/* ******** table data map ********** */}
-                </tbody>
-              </table>
-              <div className="inside-subscriber-list"></div>
-            </div>
-            <div className="distribute-btn">
-              <button onClick={() => distributeFunds()}>
-                {loadingAnim ? <span className="loader"></span> : btnContent}
-              </button>
-            </div>
+                {/* ******** table data map ********** */}
+              </tbody>
+            </table>
+            <div className="inside-subscriber-list"></div>
+          </div>
+          <div className="distribute-btn">
+            <button onClick={() => distributeFunds()}>
+              {loadingAnim ? <span className="loader"></span> : btnContent}
+            </button>
           </div>
         </div>
       </div>
-    );
-  else
-    return (
-      <div className="db-main">
-        <div className="db-sub">
-          <h1 className="distribute-h1">Distribute</h1>
-          <p className="distribute-p">
-            Takes the specified amount of Super Tokens from the sender's account
-            and distributes them to all receivers
-          </p>
-        </div>
-        <div
-          className="connect-wallet"
-          style={{ margin: "10px auto", width: "max-content" }}
-        >
-          <ConnectButton
-            accountStatus={{
-              smallScreen: "avatar",
-              largeScreen: "full",
-            }}
-            showBalance={{
-              smallScreen: false,
-              largeScreen: true,
-            }}
-          />
-        </div>
-      </div>
-    );
+    </div>
+  );
 }
 
 export default Distribute;
