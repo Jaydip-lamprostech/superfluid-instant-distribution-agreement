@@ -9,7 +9,7 @@ import Subscriber from "../components/Subscriber";
 import Distribute from "../components/Distribute";
 import Agreements from "../components/Agreements";
 import { Box, Button, Modal, Skeleton, Typography } from "@mui/material";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount, useSigner, useProvider } from "wagmi";
 import Cookies from "universal-cookie";
 import * as PushAPI from "@pushprotocol/restapi";
 
@@ -30,6 +30,7 @@ function LandingPage() {
   const [showNewNotification, setNewNotification] = useState(false);
   const [notificationNumber, setnotificationNumber] = useState(0);
   const [showDisplayNotification, setDisplayNotification] = useState(false);
+  const provider = useProvider();
 
   const handleOpen = () => {
     setDisplayNotification(true);
@@ -94,7 +95,7 @@ function LandingPage() {
             subscriptions[i].channel ===
             "0x070F992829575477A0E91D9D3e49dCFcd06d3C22"
           ) {
-            console.log("subscribed");
+            // console.log("subscribed");
             setOpted(true);
           }
         }
@@ -141,6 +142,44 @@ function LandingPage() {
       }, 5000);
       return () => clearInterval(timeInterval);
     }
+  }, [address]);
+
+  useEffect(() => {
+    console.log("in");
+    // window.location.reload();
+
+    // const refreshPageOnAccountChange = async () => {
+    //   // const provider = new ethers.providers.Web3Provider(window.ethereum);
+    //   // const signer = provider.getSigner();
+
+    //   // let currentAccount;
+    //   const currentAccount = await signer.getAddress();
+    //   console.log("current " + currentAccount);
+    //   // try {
+    //   //   console.log(currentAccount);
+    //   // } catch (error) {
+    //   //   console.error(error);
+    //   //   return;
+    //   // }
+
+    //   setInterval(async () => {
+    //     // const updatedAccount;
+    //     const updatedAccount = await signer.getAddress();
+    //     console.log("updated " + updatedAccount);
+    //     // try {
+    //     // } catch (error) {
+    //     //   console.error(error);
+    //     //   return;
+    //     // }
+
+    //     if (currentAccount !== updatedAccount) {
+    //       window.location.reload();
+    //       console.log("account changed");
+    //     }
+    //   }, 1000);
+    // };
+
+    // refreshPageOnAccountChange();
   }, [address]);
 
   const style = {
