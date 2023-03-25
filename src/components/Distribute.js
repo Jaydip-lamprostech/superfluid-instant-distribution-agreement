@@ -17,7 +17,7 @@ import Web3 from "web3";
 function Distribute({ index }) {
   const { address } = useAccount();
 
-  const [indexValue, setIndexValue] = useState("");
+  const [indexValue, setIndexValue] = useState(index ? index : "");
   const [amount, setAmount] = useState();
   const [dataloaded, setDataLoaded] = useState(false);
   const [subscribersAddress, setSubscriberAddress] = useState([]);
@@ -132,11 +132,12 @@ function Distribute({ index }) {
   // smart contract functions
 
   useEffect(() => {
-    const getIndexes = async () => {
-      const API =
-        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
+    if (address) {
+      const getIndexes = async () => {
+        const API =
+          "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
 
-      const data_ = `
+        const data_ = `
     query {
       indexes(
         where: {publisher_: {id: "${address.toLowerCase()}"},}
@@ -161,52 +162,56 @@ function Distribute({ index }) {
       }
     }
   `;
-      const c = createClient({
-        url: API,
-      });
-      const result1 = await c.query(data_).toPromise();
-      // console.log("finalData");
-      // console.log(result1.data.indexes[0].publisher.publishedIndexes);
-      let arr;
-      if (result1.data.indexes.length > 0) {
-        arr = result1.data.indexes[0].publisher.publishedIndexes;
-      }
-      // console.log(arr);
-      if (arr.length > indexArr.length) {
-        for (let i = 0; i < arr.length; i++) {
-          indexArr.push(arr[i].indexId);
-        }
-      }
-      if (arr.length > temp.length) {
-        for (let i = 0; i < arr.length; i++) {
-          temp.push(arr[i]);
-        }
-      }
-      // console.log(temp);
-      setDataLoaded(true);
-    };
-    getIndexes();
-    const getIndexData = async () => {
-      const sf = await Framework.create({
-        chainId: 5,
-        provider: provider,
-      });
-      const daix = await sf.loadSuperToken("fDAIx");
-      try {
-        let res = await daix.getIndex({
-          publisher: address,
-          indexId: indexValue.toString(),
-          providerOrSigner: signer,
+        const c = createClient({
+          url: API,
         });
-        console.log(res);
-        const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
-        setMaxToken(eth);
-      } catch (error) {
-        console.error(error);
+        const result1 = await c.query(data_).toPromise();
+        console.log(result1);
+        // console.log("finalData");
+        // console.log(result1.data.indexes[0].publisher.publishedIndexes);
+        let arr;
+        if (result1.data.indexes.length > 0) {
+          arr = result1.data.indexes[0].publisher.publishedIndexes;
+        }
+        // console.log(arr);
+        if (arr.length > indexArr.length) {
+          for (let i = 0; i < arr.length; i++) {
+            indexArr.push(arr[i].indexId);
+          }
+        }
+        if (arr.length > temp.length) {
+          for (let i = 0; i < arr.length; i++) {
+            temp.push(arr[i]);
+          }
+        }
+        // console.log(temp);
+        setDataLoaded(true);
+      };
+      getIndexes();
+      if (indexValue) {
+        const getIndexData = async () => {
+          const sf = await Framework.create({
+            chainId: 5,
+            provider: provider,
+          });
+          const daix = await sf.loadSuperToken("fDAIx");
+          try {
+            let res = await daix.getIndex({
+              publisher: address,
+              indexId: indexValue.toString(),
+              providerOrSigner: signer,
+            });
+            console.log(res);
+            const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
+            setMaxToken(eth);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        getIndexData();
       }
-    };
-    getIndexData();
-  }, [indexValue]);
+    }
+  }, [address, indexValue]);
 
   // const getFunds = async () => {
   //   try {
@@ -218,12 +223,12 @@ function Distribute({ index }) {
   //   }
   // };
 
-  useEffect(() => {
-    // getFunds();
-    if (index) {
-      setUnits(index);
-    }
-  }, []);
+  // useEffect(() => {
+  //   // getFunds();
+  //   if (index) {
+  //     setUnits(index);
+  //   }
+  // }, []);
 
   if (maxToken)
     return (

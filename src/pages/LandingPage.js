@@ -166,6 +166,7 @@ function LandingPage() {
         <div className="left-logo-main">
           <div className="left-logo">
             <img className="logo" src={logo} alt="superfluid logo" />
+            {/* <h1>SUPER PAY</h1> */}
           </div>
         </div>
         <ul className="left-ul">
@@ -384,7 +385,10 @@ function LandingPage() {
               />
             )}
           </Typography>{" "}
-          <Typography id="modal-modal-description" sx={{ mt: 2, p: 2 }}>
+          <div
+            id="modal-modal-description"
+            style={{ marginTop: "20px", padding: "10px" }}
+          >
             {showDisplayNotification &&
               showPushNotifications.length > 0 &&
               showOpted === true &&
@@ -397,8 +401,9 @@ function LandingPage() {
                       padding: "10px",
                       borderRadius: "10px",
                     }}
+                    key={key}
                   >
-                    <h4 key={key}>{item.title} </h4>
+                    <h4>{item.title} </h4>
                     <p>{item.message}</p>
                   </div>
                 );
@@ -418,7 +423,7 @@ function LandingPage() {
                 </p>
               </div>
             ) : null}
-          </Typography>
+          </div>
         </Box>
       </Modal>
     </div>
