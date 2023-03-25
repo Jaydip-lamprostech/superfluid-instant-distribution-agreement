@@ -26,10 +26,12 @@ function Distribute({ index }) {
   const [totalUnits, setTotalUnits] = useState(0);
 
   const [showupdateIndexValue, setUpdateIndexValue] = useState();
+  // console.log(setUpdateIndexValue);
   // let totalUnits = 0;
   // const [totalUnitsArr, setTotalUnitsArr] = useState([]);
 
   const [loadingAnim, setLoadingAnim] = useState(false);
+  const [loadingAnim2, setLoadingAnim2] = useState(false);
   const [btnContent, setBtnContent] = useState("Distribute");
 
   // let totalUnits = 0;
@@ -44,7 +46,7 @@ function Distribute({ index }) {
   const { data: signer } = useSigner();
 
   const updateIndexValue = async () => {
-    setLoadingAnim(true);
+    setLoadingAnim2(true);
 
     console.log("Inside updateIndexValue() function");
 
@@ -63,13 +65,16 @@ function Distribute({ index }) {
       const sign = await createIndexOperation.exec(signer);
       const receipt = await sign.wait(sign);
       if (receipt) {
-        setLoadingAnim(false);
+        const eth = Web3.utils.fromWei(`${showupdateIndexValue}`, "ether");
+        setMaxToken(eth);
+        setLoadingAnim2(false);
         console.log(
           `Value is Updated for the Index ID: ${showupdateIndexValue}`
         );
       }
     } catch (error) {
       console.log(error);
+      setLoadingAnim2(false);
     }
   };
 
@@ -98,6 +103,7 @@ function Distribute({ index }) {
       }
     } catch (err) {
       console.log(err);
+      setLoadingAnim(false);
     }
   };
 
@@ -166,7 +172,6 @@ function Distribute({ index }) {
           url: API,
         });
         const result1 = await c.query(data_).toPromise();
-        console.log(result1);
         // console.log("finalData");
         // console.log(result1.data.indexes[0].publisher.publishedIndexes);
         let arr;
@@ -188,31 +193,33 @@ function Distribute({ index }) {
         setDataLoaded(true);
       };
       getIndexes();
-      if (indexValue) {
-        const getIndexData = async () => {
-          const sf = await Framework.create({
-            chainId: 5,
-            provider: provider,
-          });
-          const daix = await sf.loadSuperToken("fDAIx");
-          try {
-            let res = await daix.getIndex({
-              publisher: address,
-              indexId: indexValue.toString(),
-              providerOrSigner: signer,
-            });
-            console.log(res);
-            const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
-            setMaxToken(eth);
-          } catch (error) {
-            console.error(error);
-          }
-        };
-        getIndexData();
-      }
     }
-  }, [address, indexValue]);
+  }, []);
 
+  useEffect(() => {
+    if (indexValue) {
+      const getIndexData = async () => {
+        const sf = await Framework.create({
+          chainId: 5,
+          provider: provider,
+        });
+        const daix = await sf.loadSuperToken("fDAIx");
+        try {
+          let res = await daix.getIndex({
+            publisher: address.toString(),
+            indexId: indexValue.toString(),
+            providerOrSigner: signer,
+          });
+          console.log(res);
+          const eth = Web3.utils.fromWei(`${res.indexValue}`, "ether");
+          setMaxToken(eth);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      getIndexData();
+    }
+  }, [indexValue, index]);
   // const getFunds = async () => {
   //   try {
   //     const tx = await connectedContract.viewAddressStake();
@@ -262,6 +269,11 @@ function Distribute({ index }) {
                       boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
                       borderRadius: "15px",
                     },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgb(224, 224, 224)",
+                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
+                      borderRadius: "15px",
+                    },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                       borderColor: "rgb(224, 224, 224)",
                       boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
@@ -298,38 +310,44 @@ function Distribute({ index }) {
               <input
                 type="number"
                 className="subscriber-input-index"
-                placeholder="Enter Token in ETH"
+                placeholder="Enter Token value in fDAIx"
+                min={maxToken}
+                onChange={(e) => {
+                  // if (e.target.value < maxToken) {
+                  //   alert(`Enter value greater than $(e.target.value) value`);
+                  // }
+                  setUpdateIndexValue(
+                    ethers.utils.parseEther(e.target.value.toString())
+                  );
+                }}
+              />
+            </div>
+            <h4>
+              Token Balance: {maxToken ? parseFloat(maxToken).toFixed(5) : "0"}{" "}
+              fDAIx
+            </h4>
+            <div className="distribute-btn">
+              <button onClick={() => updateIndexValue()}>
+                {loadingAnim2 ? (
+                  <span className="loader"></span>
+                ) : (
+                  "Update Index Value"
+                )}
+              </button>
+            </div>
+
+            <h2 className="distribute-h2">Distribution</h2>
+            <div className="subscriber-input-div">
+              <input
+                type="number"
+                className="subscriber-input-index"
+                placeholder="Enter Token in fDAIx to distribute"
                 max={maxToken}
                 onChange={(e) => {
                   setAmount(e.target.value);
                 }}
               />
             </div>
-            <h4>Token Balance: {maxToken} ETH</h4>
-            {maxToken === "0" ? (
-              <>
-                <div className="subscriber-input-div">
-                  <input
-                    type="number"
-                    className="subscriber-input-index"
-                    placeholder="Enter Token in Wei"
-                    onChange={(e) => {
-                      setUpdateIndexValue(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="distribute-btn">
-                  <button onClick={() => updateIndexValue()}>
-                    {loadingAnim ? (
-                      <span className="loader"></span>
-                    ) : (
-                      "Update Index Value"
-                    )}
-                  </button>
-                </div>
-              </>
-            ) : null}
-            <h2 className="distribute-h2">Distribution</h2>
             <div className="distribute-subscribers-list">
               <table>
                 <thead>
@@ -437,33 +455,6 @@ function Distribute({ index }) {
               </button>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  else
-    return (
-      <div className="db-main">
-        <div className="db-sub">
-          <h1 className="distribute-h1">Distribute</h1>
-          <p className="distribute-p">
-            Takes the specified amount of Super Tokens from the sender's account
-            and distributes them to all receivers
-          </p>
-        </div>
-        <div
-          className="connect-wallet"
-          style={{ margin: "10px auto", width: "max-content" }}
-        >
-          <ConnectButton
-            accountStatus={{
-              smallScreen: "avatar",
-              largeScreen: "full",
-            }}
-            showBalance={{
-              smallScreen: false,
-              largeScreen: true,
-            }}
-          />
         </div>
       </div>
     );

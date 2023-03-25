@@ -225,9 +225,9 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
-              <button className="add-fund-btn" onClick={() => AddFunds()}>
+              {/* <button className="add-fund-btn" onClick={() => AddFunds()}>
                 Add 1000 Wei in Contract
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
