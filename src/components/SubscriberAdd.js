@@ -31,7 +31,7 @@ function SubscriberAdd() {
 
   const getIndexes = async () => {
     const API =
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai";
 
     const data_ = `
     query {
@@ -59,7 +59,13 @@ function SubscriberAdd() {
     const c = createClient({
       url: API,
     });
-    const result1 = await c.query(data_).toPromise();
+    const result1 = await c
+      .query(data_, {
+        fetchOptionsOverrides: {
+          mode: "no-cors",
+        },
+      })
+      .toPromise();
     console.log("finalData");
     // console.log(result1.data.indexes[0].publisher.publishedIndexes);
     let arr;
@@ -90,7 +96,7 @@ function SubscriberAdd() {
     console.log("Inside addSubscriber() function");
 
     const sf = await Framework.create({
-      chainId: 5,
+      chainId: 80001,
       provider: provider,
     });
     const daix = await sf.loadSuperToken("fDAIx");

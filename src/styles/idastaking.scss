@@ -1,0 +1,197 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  max-width: 1000px;
+  margin: 0 auto;
+  margin-top: 13vh;
+  nav {
+    padding: 10px 0px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    h1 {
+      font-family: "Caladea", serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 2rem;
+      color: #ec994b;
+      position: relative;
+
+      span {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 2px;
+        font-family: "Caladea", serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-size: 2rem;
+        color: #15133c;
+        // color: #ec994b;
+      }
+    }
+  }
+  .first-section {
+    // margin: 50px 0px;
+    width: 100%;
+    // height: 350px;
+
+    .banner {
+      //   color: black;
+      color: white;
+      height: 100%;
+      background-color: #15133c;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      padding: 50px;
+      h1 {
+        letter-spacing: 1px;
+        margin: 30px 0px;
+        font-family: "Caladea", serif;
+        font-weight: 700;
+      }
+      p {
+        margin: 20px 0px;
+        font-family: "Caladea", serif;
+        font-size: 1.2rem;
+        max-width: 70%;
+        word-wrap: break-word;
+        letter-spacing: 1.1px;
+      }
+      .banner-inside-1 {
+        width: 50%;
+        text-align: left;
+
+        button {
+          cursor: pointer;
+          margin: 20px 0px;
+          border: 1px solid #ffffff;
+          padding: 20px 30px;
+          border-radius: 10px;
+          background-color: #ffaa00;
+          letter-spacing: 1px;
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 1.2rem;
+          box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+            rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+        }
+      }
+      .banner-inside-2 {
+        width: 50%;
+        img {
+          max-width: 100%;
+        }
+      }
+    }
+  }
+  .second-section {
+    margin: 30px 0px;
+    height: 500px;
+    width: 100%;
+    border-radius: 20px;
+    border: 2px dashed #73777b;
+  }
+}
+
+button {
+  font-family: "Caladea", serif;
+}
+button.not-connected {
+  cursor: pointer;
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  padding: 10px 20px;
+  background-color: #ffaa00;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+button.wrong-network {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  padding: 10px;
+  background-color: #ff494a;
+}
+
+button.chain-name {
+  cursor: pointer;
+  //   letter-spacing: 1px;
+  font-size: 0.85rem;
+  color: #15133c;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 2px solid #ffaa00;
+  padding: 5px;
+  background-color: #f1eee9;
+}
+
+button.connected {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #15133c;
+  padding: 10px;
+  background-color: #15133c;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+div.date-inputs {
+  display: flex;
+
+  // justify-content: space-between;
+  align-items: center;
+  div.start-date {
+    width: 50%;
+    margin-right: 10px;
+  }
+  div.end-date {
+    width: 50%;
+    // margin-right: 10px;
+  }
+}
+
+div.publish-token-inputs {
+  margin: 20px 0px;
+}
+button.publish-token {
+  cursor: pointer;
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  padding: 10px 20px;
+  margin: 20px 0px;
+  background-color: #ffaa00;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}

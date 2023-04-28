@@ -11,7 +11,7 @@
   .db-sub {
     display: flex;
     flex-direction: column;
-    padding-top: 50px;
+    // padding-top: 50px;
     position: relative;
     margin-bottom: 50px;
 
@@ -97,6 +97,7 @@
       .db-box {
         box-shadow: rgba(204, 204, 204, 0.25) 0px 0px 6px 3px;
         border: none rgb(224, 224, 224);
+        background: #15133c;
         border-radius: 20px;
         overflow: hidden;
 
@@ -171,7 +172,7 @@
               }
             }
             h4 {
-              color: black;
+              color: white;
               font-size: 1.1rem;
               font-weight: 600;
               letter-spacing: 0.17px;
@@ -187,14 +188,14 @@
             font-weight: 500;
             line-height: 150%;
             font-variant-numeric: tabular-nums;
-            color: #12141ede;
+            color: #ffffff;
           }
           table {
             width: 100%;
             border-spacing: 0;
 
             th {
-              color: #12141e99;
+              color: white;
               display: table-cell;
               vertical-align: inherit;
               border-bottom: 1px solid rgb(224, 224, 224);
@@ -204,19 +205,19 @@
               letter-spacing: 0.17px;
               // font-family: Walsheim, Arial;
               line-height: 1.43;
-              color: rgba(18, 20, 30, 0.6);
+              // color: rgba(18, 20, 30, 0.6);
               padding: 10px 32px;
               min-height: 0px;
 
               svg {
-                fill: rgba(18, 20, 30, 0.6);
+                fill: white;
               }
             }
             tr {
               display: table-row;
               vertical-align: middle;
               outline: 0px;
-              background: none rgb(255, 255, 255);
+              color: white;
             }
             td {
               padding: 10px 32px;

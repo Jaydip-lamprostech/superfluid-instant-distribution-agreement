@@ -4,6 +4,7 @@ import {
   getDefaultWallets,
   RainbowKitProvider,
   lightTheme,
+  darkTheme,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 
@@ -21,7 +22,7 @@ function App() {
     document.title = docTitle;
   });
   const { chains, provider } = configureChains(
-    [goerli, polygonMumbai],
+    [polygonMumbai],
     [
       alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID }),
       publicProvider(),
@@ -43,9 +44,9 @@ function App() {
       <RainbowKitProvider
         coolMode
         chains={chains}
-        theme={lightTheme({
-          accentColor: "#10bb35",
-          accentColorForeground: "white",
+        theme={darkTheme({
+          accentColor: "#15133c",
+          accentColorForeground: "#f1eee9",
           borderRadius: "medium",
           fontStack: "system",
           overlayBlur: "small",

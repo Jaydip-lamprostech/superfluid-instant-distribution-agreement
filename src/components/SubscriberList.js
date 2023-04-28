@@ -139,7 +139,7 @@ function SubscriberList({ setInfo, setAdd, setList, setApprove }) {
 
   const deleteSubscription = async (index, subAddress) => {
     const sf = await Framework.create({
-      chainId: 5,
+      chainId: 80001,
       provider: provider,
     });
 

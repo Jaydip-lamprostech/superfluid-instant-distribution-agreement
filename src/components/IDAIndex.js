@@ -50,7 +50,7 @@ function IDAIndex({ setIDA, setSubscriber }) {
     const id = Math.floor(Math.random() * 1000 + 1);
     console.log("Inside createIndex() function");
     const sf = await Framework.create({
-      chainId: 5,
+      chainId: 80001,
       provider: provider,
     });
     const daix = await sf.loadSuperToken("fDAIx");

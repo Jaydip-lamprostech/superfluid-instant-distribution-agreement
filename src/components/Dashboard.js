@@ -60,7 +60,7 @@ function Dashboard() {
     if (address) {
       const getBalance = async () => {
         const sf = await Framework.create({
-          chainId: 5,
+          chainId: 80001,
           provider: provider,
         });
         const daix = await sf.loadSuperToken("fDAIx");

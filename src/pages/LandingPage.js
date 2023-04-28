@@ -12,160 +12,37 @@ import { Box, Button, Modal, Skeleton, Typography } from "@mui/material";
 import { useAccount, useSigner } from "wagmi";
 import Cookies from "universal-cookie";
 import * as PushAPI from "@pushprotocol/restapi";
+import IdaStaking from "../components/IdaStaking";
+import CustomConnectWallet from "../components/CustomConnectWallet";
 
 function LandingPage() {
-  const cookies = new Cookies();
-
   const [index, setIndex] = useState();
   const [showDashboard, setDashboard] = useState(true);
   const [showIDA, setIDA] = useState(false);
   const [showSubscriber, setSubscriber] = useState(false);
   const [showAgreement, setAgreement] = useState(false);
   const [showDistribute, setDistribute] = useState(false);
-  const { data: signer } = useSigner();
-  const [open, setOpen] = useState(false);
-  const [showOpted, setOpted] = useState(false);
-  const { address, isConnected } = useAccount();
-  const [showPushNotifications, setPushNotifications] = useState([]);
-  const [showNewNotification, setNewNotification] = useState(false);
-  const [notificationNumber, setnotificationNumber] = useState(0);
-  const [showDisplayNotification, setDisplayNotification] = useState(false);
+  const [showIdaStaking, setIdaStaking] = useState(false);
 
-  const handleOpen = () => {
-    setDisplayNotification(true);
-    setnotificationNumber(0);
-    cookies.set("notificationCount", 0);
-    setNewNotification(false);
-    setOpen(true);
-    // notifi();
-  };
-  const handleClose = () => {
-    setOpen(false);
-    setnotificationNumber(0);
-    cookies.set("notificationCount", 0);
-    setNewNotification(false);
-    setDisplayNotification(false);
-  };
-
-  const optIn = async () => {
-    await PushAPI.channels.subscribe({
-      signer: signer,
-      channelAddress: "eip155:5:0x070F992829575477A0E91D9D3e49dCFcd06d3C22", // channel address in CAIP
-      userAddress: `eip155:5:${address}`, // user address in CAIP
-      onSuccess: () => {
-        console.log("opt in success");
-      },
-      onError: () => {
-        console.error("opt in error");
-      },
-      env: "staging",
-    });
-  };
-
-  const optOut = async () => {
-    await PushAPI.channels.unsubscribe({
-      signer: signer,
-      channelAddress: "eip155:5:0x070F992829575477A0E91D9D3e49dCFcd06d3C22", // channel address in CAIP
-      userAddress: `eip155:5:${address}`, // user address in CAIP
-      onSuccess: () => {
-        console.log("opt out success");
-      },
-      onError: () => {
-        console.error("opt out error");
-      },
-      env: "staging",
-    });
-  };
-
-  useEffect(() => {
-    console.log(cookies.get("notificationCount"));
-    if (address) {
-      const timeInterval = setInterval(async () => {
-        console.log("timer");
-        const subscriptions = await PushAPI.user.getSubscriptions({
-          user: `eip155:5:${address}`, // user address in CAIP
-          env: "staging",
-        });
-        if (subscriptions.length === 0) {
-          setOpted(false);
-        }
-        for (let i = 0; i < subscriptions.length; i++) {
-          if (
-            subscriptions[i].channel ===
-            "0x070F992829575477A0E91D9D3e49dCFcd06d3C22"
-          ) {
-            console.log("subscribed");
-            setOpted(true);
-          }
-        }
-        console.log(subscriptions);
-        const notifications = await PushAPI.user.getFeeds({
-          user: `eip155:5:${address}`, // user address in CAIP
-          env: "staging",
-          limit: 100,
-        });
-        console.log(notifications);
-        // for (let i = 0; i < notifications.length; i++) {
-        //   if(notifications[i].app !== "")
-        // }
-        // if (
-        //   cookies.get("notificationCount") !==
-        //   notifications.length - showPushNotifications.length
-        // ) {
-        //   cookies.set(
-        //     "notificationCount",
-        //     notifications.length - showPushNotifications.length
-        //   );
-        // }
-
-        if (notifications.length > showPushNotifications.length) {
-          setNewNotification(true);
-          cookies.set(
-            "notificationCount",
-            notifications.length - showPushNotifications.length
-          );
-          showPushNotifications.splice(0, showPushNotifications.length);
-          for (let i = 0; i < notifications.length; i++) {
-            // if (notifications[i].app === "Money-Router")
-            showPushNotifications.push(notifications[i]);
-          }
-          // if (showPushNotifications.length === notifications.length) {
-          //   setDisplayNotification(true);
-          // }
-
-          setnotificationNumber(cookies.get("notificationCount"));
-        }
-
-        // console.log(showPushNotifications);
-        // setPushNotifications(showPushNotifications);
-      }, 5000);
-      return () => clearInterval(timeInterval);
-    }
-  }, [address]);
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "50vw",
-    bgcolor: "background.paper",
-    borderRadius: "20px",
-    boxShadow: 24,
-    p: 0,
-    paddingBottom: "32px",
-    maxHeight: "70vh",
-    overflow: "auto",
-    overflowX: "hidden",
-    maxWidth: "700px",
-  };
+  // const { data: signer } = useSigner();
+  // const [open, setOpen] = useState(false);
+  // const [showOpted, setOpted] = useState(false);
+  // const { address, isConnected } = useAccount();
+  // // const [showPushNotifications, setPushNotifications] = useState([]);
+  // const [showNewNotification, setNewNotification] = useState(false);
+  // const [notificationNumber, setnotificationNumber] = useState(0);
+  // const [showDisplayNotification, setDisplayNotification] = useState(false);
 
   return (
     <div className="main">
       <div className="main-left">
         <div className="left-logo-main">
+          <h1>
+            Instant Pay <span>Instant Pay</span>
+          </h1>
           <div className="left-logo">
-            <img className="logo" src={logo} alt="superfluid logo" />
+            {/* <img className="logo" src={logo} alt="superfluid logo" /> */}
+
             {/* <h1>SUPER PAY</h1> */}
           </div>
         </div>
@@ -178,6 +55,7 @@ function LandingPage() {
               setSubscriber(false);
               setAgreement(false);
               setDistribute(false);
+              setIdaStaking(false);
             }}
           >
             <div className="link-icon">
@@ -204,6 +82,7 @@ function LandingPage() {
               setSubscriber(false);
               setAgreement(false);
               setDistribute(false);
+              setIdaStaking(false);
             }}
           >
             <div className="link-icon">
@@ -228,6 +107,7 @@ function LandingPage() {
               setSubscriber(true);
               setAgreement(false);
               setDistribute(false);
+              setIdaStaking(false);
             }}
           >
             <div className="link-icon">
@@ -252,6 +132,7 @@ function LandingPage() {
               setSubscriber(false);
               setAgreement(true);
               setDistribute(false);
+              setIdaStaking(false);
             }}
           >
             <div className="link-icon">
@@ -276,6 +157,7 @@ function LandingPage() {
               setSubscriber(false);
               setAgreement(false);
               setDistribute(true);
+              setIdaStaking(false);
             }}
           >
             <div className="link-icon">
@@ -293,41 +175,37 @@ function LandingPage() {
             </div>
             <div className="link-text">Distribute</div>
           </div>
+          <div
+            className={showIdaStaking ? "left-ul-link active" : "left-ul-link"}
+            onClick={() => {
+              setDashboard(false);
+              setIDA(false);
+              setSubscriber(false);
+              setAgreement(false);
+              setDistribute(false);
+              setIdaStaking(true);
+            }}
+          >
+            <div className="link-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 0 24 24"
+                width="24px"
+                fill="#000000"
+              >
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path d="M22 9h-4.79l-4.39-6.57c-.4-.59-1.27-.59-1.66 0L6.77 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1zM11.99 4.79L14.8 9H9.18l2.81-4.21zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+              </svg>
+            </div>
+            <div className="link-text">IDA Staking</div>
+          </div>
         </ul>
       </div>
       <div className="main-right">
         <div className="right-header-parent">
           <header className="right-header">
-            {isConnected ? (
-              <Button onClick={handleOpen} className="notification-btn">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  width="24px"
-                  fill="#000000"
-                >
-                  <path d="M0 0h24v24H0V0z" fill="none" />
-                  <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.89 0 1.34-1.08.71-1.71L18 16z" />
-                </svg>
-                {showNewNotification ? (
-                  <span className="red-dot">
-                    {notificationNumber > 0 ? notificationNumber : null}
-                  </span>
-                ) : null}
-              </Button>
-            ) : null}
-
-            <ConnectButton
-              accountStatus={{
-                smallScreen: "avatar",
-                largeScreen: "full",
-              }}
-              showBalance={{
-                smallScreen: false,
-                largeScreen: true,
-              }}
-            />
+            <CustomConnectWallet />
           </header>
         </div>
         <div className="inside-main-right">
@@ -345,10 +223,12 @@ function LandingPage() {
             />
           ) : showDistribute ? (
             <Distribute index={index} />
+          ) : showIdaStaking ? (
+            <IdaStaking />
           ) : null}
         </div>
       </div>
-      <Modal
+      {/* <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
@@ -389,25 +269,6 @@ function LandingPage() {
             id="modal-modal-description"
             style={{ marginTop: "20px", padding: "10px" }}
           >
-            {showDisplayNotification &&
-              showPushNotifications.length > 0 &&
-              showOpted === true &&
-              showPushNotifications.map((item, key) => {
-                return (
-                  <div
-                    style={{
-                      border: "1px solid #10bb35aa",
-                      margin: "10px 0px",
-                      padding: "10px",
-                      borderRadius: "10px",
-                    }}
-                    key={key}
-                  >
-                    <h4>{item.title} </h4>
-                    <p>{item.message}</p>
-                  </div>
-                );
-              })}
             {!showOpted ? (
               <div
                 style={{
@@ -425,7 +286,7 @@ function LandingPage() {
             ) : null}
           </div>
         </Box>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

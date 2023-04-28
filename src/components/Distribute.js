@@ -51,7 +51,7 @@ function Distribute({ index }) {
     console.log("Inside updateIndexValue() function");
 
     const sf = await Framework.create({
-      chainId: 5,
+      chainId: 80001,
       provider: provider,
     });
     const daix = await sf.loadSuperToken("fDAIx");
@@ -200,7 +200,7 @@ function Distribute({ index }) {
     if (indexValue) {
       const getIndexData = async () => {
         const sf = await Framework.create({
-          chainId: 5,
+          chainId: 80001,
           provider: provider,
         });
         const daix = await sf.loadSuperToken("fDAIx");
@@ -264,11 +264,6 @@ function Distribute({ index }) {
                       {
                         minHeight: "auto",
                       },
-                    ".MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(224, 224, 224)",
-                      boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
-                      borderRadius: "15px",
-                    },
                     ".MuiOutlinedInput-notchedOutline": {
                       borderColor: "rgb(224, 224, 224)",
                       boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
