@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { stackingContractInstance } from "./ContractInstance";
 
 function IdaStaking() {
   const [open, setOpen] = useState(false);
@@ -123,10 +124,63 @@ function IdaStaking() {
     },
   ];
 
+  // contract functions
+
+  const publishToken = async () => {
+    try {
+      const stackingContract = await stackingContractInstance();
+      // get days for the token
+      console.log(stackingContract);
+      const epoch1 = publishTokenDetails.startDate; // May 3, 2021 00:00:00 UTC
+      const epoch2 = publishTokenDetails.endDate; // January 1, 2022 00:00:00 UTC
+
+      const date1 = new Date(epoch1 * 1000);
+      const date2 = new Date(epoch2 * 1000);
+
+      const days = Math.floor((date2 - date1) / (1000 * 60 * 60 * 24));
+
+      console.log(days); // output: 242
+      console.log(
+        publishTokenDetails.tokenAddress,
+        publishTokenDetails.tokenAmount,
+        publishTokenDetails.startDate,
+        days,
+        publishTokenDetails.tokenName,
+        publishTokenDetails.tokenSymbol
+      );
+
+      // contract function to publish the token
+      const tx = await stackingContract.publishTokens(
+        "0xEB796bdb90fFA0f28255275e16936D25d34186030xEB796bdb90fFA0f28255275e16936D25d3418603",
+        publishTokenDetails.tokenAddress,
+        publishTokenDetails.tokenAmount,
+        publishTokenDetails.startDate,
+        days,
+        publishTokenDetails.tokenName,
+        publishTokenDetails.tokenSymbol
+      );
+
+      await tx.wait();
+      console.log(tx);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const convertFromEthtoWei = (number) => {
     if (number) {
       const weiValue = Web3.utils.toWei(number, "ether");
-      return weiValue;
+      return parseInt(weiValue);
+    } else {
+      return null;
+    }
+  };
+
+  const epochDate = (date) => {
+    if (date) {
+      var myDate = new Date(date);
+      var myEpoch = myDate.getTime() / 1000.0;
+      return myEpoch;
     } else {
       return null;
     }
@@ -296,12 +350,12 @@ function IdaStaking() {
                   id="date"
                   label="Start Date"
                   type="date"
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setPublishTokenDetails({
                       ...publishTokenDetails,
-                      startDate: e.target.value,
-                    })
-                  }
+                      startDate: epochDate(e.target.value),
+                    });
+                  }}
                   // defaultValue="2017-05-24"
                   // sx={{ width: 220 }}
                   InputLabelProps={{
@@ -318,7 +372,7 @@ function IdaStaking() {
                   onChange={(e) =>
                     setPublishTokenDetails({
                       ...publishTokenDetails,
-                      endDate: e.target.value,
+                      endDate: epochDate(e.target.value),
                     })
                   }
                   // defaultValue="2017-05-24"
@@ -330,10 +384,7 @@ function IdaStaking() {
                 />
               </div>
             </div>
-            <button
-              className="publish-token"
-              onClick={() => console.log(publishTokenDetails)}
-            >
+            <button className="publish-token" onClick={() => publishToken()}>
               Publish
             </button>
           </div>

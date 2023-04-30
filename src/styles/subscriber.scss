@@ -5,7 +5,7 @@
   z-index: 3;
 
   svg {
-    fill: #10bb35ff;
+    fill: #15133c;
   }
 }
 
@@ -35,8 +35,8 @@
     transition: background-color 150ms cubic-bezier(0.55, 0, 0.1, 1) 0ms;
   }
   button.active {
-    background: rgba(16, 187, 53, 0.08);
-    color: #10bb35;
+    background: #ffaa0066;
+    color: #15133c;
   }
 }
 .subscriber-add-box {
