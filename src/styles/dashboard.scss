@@ -6,7 +6,6 @@
   display: block;
   padding-left: 16px;
   padding-right: 16px;
-  margin-top: 13vh;
   font-family: "Caladea", serif;
 
   .db-sub {
@@ -14,6 +13,7 @@
     flex-direction: column;
     // padding-top: 50px;
     position: relative;
+    margin-top: 5vh;
     margin-bottom: 50px;
 
     h1 {
