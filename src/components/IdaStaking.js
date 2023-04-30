@@ -3,6 +3,7 @@ import coin from "../assets/coin.png";
 import "../styles/idastaking.scss";
 import { ethers } from "ethers";
 import Web3 from "web3";
+import stackingContract from "../artifacts/StackingContract.json";
 import {
   Box,
   Button,
@@ -12,7 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { stackingContractInstance } from "./ContractInstance";
+import { CONTRACT_ADDRESS, stackingContractInstance } from "./ContractInstance";
+import { Framework } from "@superfluid-finance/sdk-core";
 
 function IdaStaking() {
   const [open, setOpen] = useState(false);
@@ -126,10 +128,65 @@ function IdaStaking() {
 
   // contract functions
 
+  const approve = async () => {
+    console.log("approve");
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const sf = await Framework.create({
+          chainId: 80001,
+          provider: provider,
+        });
+        const daix = await sf.loadSuperToken(publishTokenDetails.tokenAddress); // add the token address from user entered datta
+
+        // checking allowance rate
+        // const allowence = await daix.allowance({
+        //   owner: "0x9D6d094B29A421168F5B16bCfb41a15eA3A23950",
+        //   spender: "0x4d66055Fa02bd890498AEbeB415c4F2007053c6e",
+        //   providerOrSigner: signer,
+        // });
+        // console.log(allowence);
+        // condition for approval
+        const moneyRouterApproval = daix.approve({
+          receiver: CONTRACT_ADDRESS,
+          amount: ethers.utils.parseEther(String(10)),
+        });
+        await moneyRouterApproval.exec(signer).then(async function (tx) {
+          await tx.wait();
+
+          console.log(`
+                  Congrats! You've just successfully approved the money router contract.
+                  Tx Hash: ${tx.hash}
+              `);
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const publishToken = async () => {
     try {
       const stackingContract = await stackingContractInstance();
+      // const provider = new ethers.providers.Web3Provider(ethereum);
+      // const signer = provider.getSigner();
+      // if (!provider) {
+      //   console.log("Metamask is not installed, please install!");
+      // }
+
+      // const { chainId } = await provider.getNetwork();
+      // console.log("switch case for this case is: " + chainId);
+      // const con = new ethers.Contract(
+      //   CONTRACT_ADDRESS,
+      //   stackingContract.abi,
+      //   signer
+      // );
+
       // get days for the token
+
       console.log(stackingContract);
       const epoch1 = publishTokenDetails.startDate; // May 3, 2021 00:00:00 UTC
       const epoch2 = publishTokenDetails.endDate; // January 1, 2022 00:00:00 UTC
