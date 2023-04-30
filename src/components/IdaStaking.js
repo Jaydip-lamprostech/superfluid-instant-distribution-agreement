@@ -491,12 +491,7 @@ function IdaStaking() {
                             Claim
                           </button>
                         ) : (
-                          <button
-                            className="claim "
-                            onClick={() => claimFunds(item.id, item.tokenAdd)}
-                          >
-                            Claim
-                          </button>
+                          <button className="claim disable">Claim</button>
                         )}
                         {item.isUnstakable && item.stakedStatus ? (
                           <button
