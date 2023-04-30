@@ -15,6 +15,7 @@ import {
 import { useState } from "react";
 import { CONTRACT_ADDRESS, stackingContractInstance } from "./ContractInstance";
 import { Framework } from "@superfluid-finance/sdk-core";
+const contractAddress = "0xe84d2D176Ba67De42aFb8a7e63F98Df9bE456915";
 
 function IdaStaking() {
   const [open, setOpen] = useState(false);
@@ -168,6 +169,75 @@ function IdaStaking() {
     }
   };
 
+  const publishTokenNew = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const sf = await Framework.create({
+          chainId: 80001,
+          provider: provider,
+        });
+        const daix = await sf.loadSuperToken("fDAIx");
+
+        // approve
+        const moneyRouterApproval = daix.approve({
+          receiver: contractAddress,
+          amount: ethers.utils.parseEther(String(10)),
+        });
+        await moneyRouterApproval.exec(signer).then(async function (tx) {
+          await tx.wait();
+
+          console.log(`
+                  Congrats! You've just successfully approved the money router contract.
+                  Tx Hash: ${tx.hash}
+              `);
+        });
+
+        // user data
+        const epoch1 = publishTokenDetails.startDate; // May 3, 2021 00:00:00 UTC
+        const epoch2 = publishTokenDetails.endDate; // January 1, 2022 00:00:00 UTC
+
+        const date1 = new Date(epoch1 * 1000);
+        const date2 = new Date(epoch2 * 1000);
+
+        const days = Math.floor((date2 - date1) / (1000 * 60 * 60 * 24));
+
+        console.log(days); // output: 242
+        console.log(
+          publishTokenDetails.tokenAddress,
+          publishTokenDetails.tokenAmount,
+          publishTokenDetails.startDate,
+          days,
+          publishTokenDetails.tokenName,
+          publishTokenDetails.tokenSymbol
+        );
+
+        // contract function call
+        const contract = new ethers.Contract(
+          contractAddress,
+          stackingContract.abi,
+          signer
+        );
+        const tx = await contract.publishTokens(
+          "0xEB796bdb90fFA0f28255275e16936D25d3418603", // host address, fixed
+          publishTokenDetails.tokenAddress, // token address
+          ethers.utils.parseEther(String(publishTokenDetails.tokenAmount)), // amount
+          publishTokenDetails.startDate,
+          days, // days
+          publishTokenDetails.tokenName,
+          publishTokenDetails.tokenSymbol
+        );
+        tx.wait();
+        console.log("Done");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const publishToken = async () => {
     try {
       const stackingContract = await stackingContractInstance();
@@ -208,13 +278,13 @@ function IdaStaking() {
 
       // contract function to publish the token
       const tx = await stackingContract.publishTokens(
-        "0xEB796bdb90fFA0f28255275e16936D25d34186030xEB796bdb90fFA0f28255275e16936D25d3418603",
-        publishTokenDetails.tokenAddress,
-        publishTokenDetails.tokenAmount,
-        publishTokenDetails.startDate,
-        days,
-        publishTokenDetails.tokenName,
-        publishTokenDetails.tokenSymbol
+        "0xEB796bdb90fFA0f28255275e16936D25d3418603", // host address, fixed
+        "0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f", // token address
+        ethers.utils.parseEther(String(10)), // amount
+        1685445170,
+        3, // days
+        "fDAIx",
+        "fDAIx"
       );
 
       await tx.wait();
@@ -393,7 +463,7 @@ function IdaStaking() {
                 onChange={(e) => {
                   setPublishTokenDetails({
                     ...publishTokenDetails,
-                    tokenAmount: convertFromEthtoWei(e.target.value),
+                    tokenAmount: e.target.value,
                   });
                 }}
                 // defaultValue="Hello World"
@@ -441,7 +511,7 @@ function IdaStaking() {
                 />
               </div>
             </div>
-            <button className="publish-token" onClick={() => publishToken()}>
+            <button className="publish-token" onClick={() => publishTokenNew()}>
               Publish
             </button>
           </div>
