@@ -83,7 +83,7 @@ function IdaStaking() {
           chainId: 80001,
           provider: provider,
         });
-        const daix = await sf.loadSuperToken("fDAIx");
+        const daix = await sf.loadSuperToken(publishTokenDetails.tokenAddress);
 
         // approve
         const moneyRouterApproval = daix.approve({
