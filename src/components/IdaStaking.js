@@ -21,6 +21,7 @@ const contractAddress = "0xe84d2D176Ba67De42aFb8a7e63F98Df9bE456915";
 function IdaStaking() {
   const { address } = useAccount();
   const [loading, setLoading] = useState(true);
+  const [transLoading, setTransLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [count, setCount] = useState(1);
@@ -71,6 +72,7 @@ function IdaStaking() {
   // contract functions
 
   const publishTokenNew = async () => {
+    setTransLoading(true);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -136,10 +138,12 @@ function IdaStaking() {
         await tx.wait();
         setCount((prev) => prev + 1);
         console.log("Done");
+        setTransLoading(false);
         handleClose();
       }
     } catch (error) {
       console.log(error);
+      setTransLoading(false);
     }
   };
 
@@ -221,6 +225,7 @@ function IdaStaking() {
     }
   };
   const stake = async () => {
+    setTransLoading(true);
     try {
       const stackingContract = await stackingContractInstance();
       const tx = await stackingContract.stakeTokens(
@@ -232,10 +237,61 @@ function IdaStaking() {
       );
       await tx.wait();
       console.log(tx);
+      setTransLoading(false);
       handleClose2();
       setCount((prev) => prev + 1);
     } catch (err) {
       console.log(err);
+      setTransLoading(false);
+    }
+  };
+
+  const unStake = async (id) => {
+    setTransLoading(true);
+    try {
+      const stackingContract = await stackingContractInstance();
+      console.log(stackingContract);
+      const tx = await stackingContract.unStakeSubscription(id);
+      await tx.wait();
+      console.log(tx);
+      setTransLoading(false);
+      setCount((prev) => prev + 1);
+    } catch (err) {
+      console.log(err);
+      setTransLoading(false);
+    }
+  };
+
+  const claimFunds = async (id, tokenAddress) => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const sf = await Framework.create({
+          chainId: 80001,
+          provider: provider,
+        });
+
+        const daix = await sf.loadSuperToken(tokenAddress);
+
+        console.log("claiming funds");
+        const subscribeOperation = daix.claim({
+          indexId: parseInt(id), // index id
+          subscriber: address, // user address
+          publisher: contractAddress,
+          // userData: "0x",
+        });
+        const tx = await subscribeOperation.exec(signer);
+        const receipt = await tx.wait();
+        if (receipt) {
+          console.log("FUNDS DISTRIBUTED");
+          setCount((prev) => prev + 1);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   // const publishToken = async () => {
@@ -428,14 +484,29 @@ function IdaStaking() {
                           </button>
                         )}
                         {item.stakedStatus && item.isClamable ? (
-                          <button className="claim">Claim</button>
+                          <button
+                            className="claim"
+                            onClick={() => claimFunds(item.id, item.tokenAdd)}
+                          >
+                            Claim
+                          </button>
                         ) : (
-                          <button className="claim disable">Claim</button>
+                          <button
+                            className="claim "
+                            onClick={() => claimFunds(item.id, item.tokenAdd)}
+                          >
+                            Claim
+                          </button>
                         )}
                         {item.isUnstakable && item.stakedStatus ? (
-                          <button className="unstake">Unstake</button>
+                          <button
+                            className="unstake"
+                            onClick={() => unStake(item.id)}
+                          >
+                            Unstake
+                          </button>
                         ) : (
-                          <button className="unstake disable">disable</button>
+                          <button className="unstake disable">Unstake</button>
                         )}
                       </td>
                     </tr>
@@ -579,7 +650,21 @@ function IdaStaking() {
                 className="publish-token"
                 onClick={() => publishTokenNew()}
               >
-                Publish
+                {transLoading ? (
+                  <svg
+                    className="animate-spin button-spin-svg-pic"
+                    version="1.1"
+                    id="L9"
+                    xmlns="http://www.w3.org/2000/svg"
+                    x="0px"
+                    y="0px"
+                    viewBox="0 0 100 100"
+                  >
+                    <path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"></path>
+                  </svg>
+                ) : (
+                  "Stake"
+                )}
               </button>
             </div>
           </Box>
@@ -629,7 +714,16 @@ function IdaStaking() {
               </div>
 
               <button className="stake-popup" onClick={() => stake()}>
-                Stake
+                {transLoading ? (
+                  <div class="lds-ellipsis">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                ) : (
+                  "Stake"
+                )}
               </button>
             </div>
           </Box>
