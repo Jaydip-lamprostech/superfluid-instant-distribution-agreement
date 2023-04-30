@@ -240,6 +240,7 @@ function IdaStaking() {
 
   const publishToken = async () => {
     try {
+      console.log(ethers.utils.parseEther(String(10)));
       const stackingContract = await stackingContractInstance();
       // const provider = new ethers.providers.Web3Provider(ethereum);
       // const signer = provider.getSigner();
@@ -278,13 +279,13 @@ function IdaStaking() {
 
       // contract function to publish the token
       const tx = await stackingContract.publishTokens(
-        "0xEB796bdb90fFA0f28255275e16936D25d3418603", // host address, fixed
-        "0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f", // token address
-        ethers.utils.parseEther(String(10)), // amount
-        1685445170,
-        3, // days
-        "fDAIx",
-        "fDAIx"
+        "0xEB796bdb90fFA0f28255275e16936D25d34186030xEB796bdb90fFA0f28255275e16936D25d3418603",
+        publishTokenDetails.tokenAddress,
+        publishTokenDetails.tokenAmount,
+        publishTokenDetails.startDate,
+        days,
+        publishTokenDetails.tokenName,
+        publishTokenDetails.tokenSymbol
       );
 
       await tx.wait();
@@ -463,7 +464,7 @@ function IdaStaking() {
                 onChange={(e) => {
                   setPublishTokenDetails({
                     ...publishTokenDetails,
-                    tokenAmount: e.target.value,
+                    tokenAmount: convertFromEthtoWei(e.target.value),
                   });
                 }}
                 // defaultValue="Hello World"
