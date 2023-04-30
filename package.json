@@ -13,18 +13,21 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "browserify-zlib": "^0.2.0",
     "ethers": "^5.7.2",
     "graphql": "^16.6.0",
+    "https-browserify": "^1.0.0",
     "node-sass": "^8.0.0",
     "react": "^18.2.0",
     "react-blockies": "^1.4.1",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "stream-http": "^3.2.0",
     "universal-cookie": "^4.0.4",
     "urql": "^3.0.3",
     "wagmi": "^0.9.5",
     "web-vitals": "^2.1.4",
-    "web3": "^1.8.1"
+    "web3": "^1.9.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -51,5 +54,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "browserify-zlib": "^0.2.0",
+    "https-browserify": "^1.0.0",
+    "stream-http": "^3.2.0"
   }
 }

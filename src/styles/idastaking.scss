@@ -100,6 +100,80 @@
     width: 100%;
     border-radius: 20px;
     border: 2px dashed #73777b;
+    button {
+      cursor: pointer;
+      letter-spacing: 1px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 5px;
+      font-family: "Caladea", serif;
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+    button.stake {
+      color: #ffffff;
+      border: 1px solid #ffffff;
+      padding: 5px 20px;
+      // margin: 20px 0px;
+      margin-right: 10px;
+      background-color: #ffaa00;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+        rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    }
+    button.claim {
+      color: #ffffff;
+      border: 1px solid #ffffff;
+      padding: 5px 20px;
+      // margin: 20px 0px;
+      margin-right: 10px;
+      background-color: #15133c;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+        rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    }
+    table {
+      font-family: "Caladea", serif;
+      width: 100%;
+      text-align: center;
+      border-collapse: collapse;
+      th,
+      td {
+        padding: 10px;
+      }
+      th:nth-of-type(2) {
+        width: 20%;
+      }
+      th:nth-of-type(2),
+      td:nth-of-type(2) {
+        text-align: left;
+      }
+      th:nth-of-type(3),
+      td:nth-of-type(3),
+      th:nth-of-type(4),
+      td:nth-of-type(4) {
+        width: 5%;
+      }
+      thead {
+        padding: 10px;
+
+        th {
+          border-bottom: 1px solid #000;
+        }
+      }
+      tbody {
+        tr {
+          // background-color: #73777b;
+          td {
+            border-bottom: 1px solid #73777b;
+          }
+          span.token-symbol {
+            color: #ec994b;
+            font-weight: 700;
+            margin-left: 10px;
+          }
+        }
+      }
+    }
   }
 }
 

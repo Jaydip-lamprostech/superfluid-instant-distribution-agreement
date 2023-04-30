@@ -1,6 +1,8 @@
 import React from "react";
 import coin from "../assets/coin.png";
 import "../styles/idastaking.scss";
+import { ethers } from "ethers";
+import Web3 from "web3";
 import {
   Box,
   Button,
@@ -13,6 +15,14 @@ import { useState } from "react";
 
 function IdaStaking() {
   const [open, setOpen] = useState(false);
+  const [publishTokenDetails, setPublishTokenDetails] = useState({
+    tokenAddress: "",
+    tokenName: "",
+    tokenSymbol: "",
+    tokenAmount: "",
+    startDate: "",
+    endDate: "",
+  });
 
   const handleOpen = () => {
     setOpen(true);
@@ -37,6 +47,90 @@ function IdaStaking() {
     overflowX: "hidden",
     maxWidth: "700px",
   };
+
+  const data = [
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+    {
+      tokenName: "Ether",
+      tokenSymbol: "ETH",
+      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
+      tokenAmount: "2500",
+      tokenStartDate: "20 Oct 2023",
+      tokenEndDate: "25 Oct 2023",
+    },
+  ];
+
+  const convertFromEthtoWei = (number) => {
+    if (number) {
+      const weiValue = Web3.utils.toWei(number, "ether");
+      return weiValue;
+    } else {
+      return null;
+    }
+  };
   return (
     <div className="home">
       <div className="first-section">
@@ -54,7 +148,58 @@ function IdaStaking() {
           </div>
         </div>
       </div>
-      <div className="second-section"></div>
+      <div className="second-section">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Token</th>
+              <th>Token Address</th>
+              <th>Publisher Address</th>
+              <th>Amount</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item, key) => {
+              return (
+                <tr key={key}>
+                  <td>{key + 1}</td>
+                  <td>
+                    {item.tokenName}{" "}
+                    <span className="token-symbol">{item.tokenSymbol}</span>
+                  </td>
+                  <td>
+                    {item.tokenAddress.slice(0, 4) +
+                      "..." +
+                      item.tokenAddress.slice(
+                        item.tokenAddress.length - 4,
+                        item.tokenAddress.length
+                      )}
+                  </td>
+                  <td>
+                    {item.publisherAddress.slice(0, 4) +
+                      "..." +
+                      item.publisherAddress.slice(
+                        item.publisherAddress.length - 4,
+                        item.publisherAddress.length
+                      )}
+                  </td>
+                  <td>{item.tokenAmount}</td>
+                  <td>{item.tokenStartDate}</td>
+                  <td>{item.tokenEndDate}</td>
+                  <td>
+                    <button className="stake">Stake</button>
+                    <button className="claim">Claim</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       <Modal
         open={open}
         onClose={handleClose}
@@ -88,6 +233,12 @@ function IdaStaking() {
                 label="Token Name"
                 // defaultValue="Hello World"
                 // helperText="Incorrect entry."
+                onChange={(e) =>
+                  setPublishTokenDetails({
+                    ...publishTokenDetails,
+                    tokenName: e.target.value,
+                  })
+                }
                 fullWidth
               />
             </div>
@@ -96,6 +247,28 @@ function IdaStaking() {
                 // error
                 id="outlined-error-helper-text"
                 label="Token Address"
+                onChange={(e) =>
+                  setPublishTokenDetails({
+                    ...publishTokenDetails,
+                    tokenAddress: e.target.value,
+                  })
+                }
+                // defaultValue="Hello World"
+                // helperText="Incorrect entry."
+                fullWidth
+              />
+            </div>
+            <div className="publish-token-inputs">
+              <TextField
+                // error
+                id="outlined-error-helper-text"
+                label="Token Symbol"
+                onChange={(e) =>
+                  setPublishTokenDetails({
+                    ...publishTokenDetails,
+                    tokenSymbol: e.target.value,
+                  })
+                }
                 // defaultValue="Hello World"
                 // helperText="Incorrect entry."
                 fullWidth
@@ -106,6 +279,12 @@ function IdaStaking() {
                 // error
                 id="outlined-error-helper-text"
                 label="Token Amount"
+                onChange={(e) => {
+                  setPublishTokenDetails({
+                    ...publishTokenDetails,
+                    tokenAmount: convertFromEthtoWei(e.target.value),
+                  });
+                }}
                 // defaultValue="Hello World"
                 // helperText="Incorrect entry."
                 fullWidth
@@ -117,6 +296,12 @@ function IdaStaking() {
                   id="date"
                   label="Start Date"
                   type="date"
+                  onChange={(e) =>
+                    setPublishTokenDetails({
+                      ...publishTokenDetails,
+                      startDate: e.target.value,
+                    })
+                  }
                   // defaultValue="2017-05-24"
                   // sx={{ width: 220 }}
                   InputLabelProps={{
@@ -130,6 +315,12 @@ function IdaStaking() {
                   id="date"
                   label="End Date"
                   type="date"
+                  onChange={(e) =>
+                    setPublishTokenDetails({
+                      ...publishTokenDetails,
+                      endDate: e.target.value,
+                    })
+                  }
                   // defaultValue="2017-05-24"
                   // sx={{ width: 220 }}
                   InputLabelProps={{
@@ -139,7 +330,12 @@ function IdaStaking() {
                 />
               </div>
             </div>
-            <button className="publish-token">Publish</button>
+            <button
+              className="publish-token"
+              onClick={() => console.log(publishTokenDetails)}
+            >
+              Publish
+            </button>
           </div>
         </Box>
       </Modal>
