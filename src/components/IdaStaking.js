@@ -189,7 +189,9 @@ function IdaStaking() {
         // approve
         const moneyRouterApproval = daix.approve({
           receiver: contractAddress,
-          amount: ethers.utils.parseEther(String(10)),
+          amount: ethers.utils.parseEther(
+            String(publishTokenDetails.tokenAmount)
+          ),
         });
         await moneyRouterApproval.exec(signer).then(async function (tx) {
           await tx.wait();
