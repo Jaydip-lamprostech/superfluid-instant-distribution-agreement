@@ -16,7 +16,7 @@ import { useState } from "react";
 import { CONTRACT_ADDRESS, stackingContractInstance } from "./ContractInstance";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { useAccount } from "wagmi";
-const contractAddress = "0xe84d2D176Ba67De42aFb8a7e63F98Df9bE456915";
+const contractAddress = "0x3458b3dcd0483c07d9054d04D4Cee61B3a543931";
 
 function IdaStaking() {
   const { address } = useAccount();
@@ -398,7 +398,7 @@ function IdaStaking() {
                 <th>Amount</th>
                 <th>Start Date</th>
                 <th>End Date</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>

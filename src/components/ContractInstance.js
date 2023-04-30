@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 import stackingContract from "../artifacts/StackingContract.json";
-export const CONTRACT_ADDRESS = "0xe84d2D176Ba67De42aFb8a7e63F98Df9bE456915";
+export const CONTRACT_ADDRESS = "0x3458b3dcd0483c07d9054d04D4Cee61B3a543931";
 
 export const stackingContractInstance = async () => {
   const { ethereum } = window;

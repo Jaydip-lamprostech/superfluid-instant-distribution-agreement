@@ -28,7 +28,7 @@ function SubscriberApprove() {
 
   const getIndexes = async () => {
     const API =
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai";
 
     const data_ = `query MyQuery {
         indexes(
