@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80%;
-  max-width: 1000px;
+  width: 90%;
+  max-width: 1400px;
   margin: 0 auto;
   margin-top: 5vh;
   nav {
@@ -107,6 +107,7 @@
       font-weight: 700;
       border-radius: 5px;
       font-family: "Caladea", serif;
+      margin: 5px 0px;
       &:hover {
         transform: scale(1.05);
       }
@@ -114,7 +115,7 @@
     button.stake {
       color: #ffffff;
       border: 1px solid #ffffff;
-      padding: 5px 20px;
+      padding: 5px 10px;
       // margin: 20px 0px;
       margin-right: 10px;
       background-color: #ffaa00;
@@ -124,12 +125,24 @@
     button.claim {
       color: #ffffff;
       border: 1px solid #ffffff;
-      padding: 5px 20px;
+      padding: 5px 10px;
       // margin: 20px 0px;
       margin-right: 10px;
       background-color: #15133c;
       box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
         rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    }
+    button.disable {
+      pointer-events: none;
+      opacity: 0.2;
+    }
+    button.unstake {
+      color: #15133c;
+      outline: 2px solid #ffaa00;
+      border: 1px solid #15133c;
+      padding: 5px 10px;
+      // margin: 20px 0px;
+      // background-color: #15133c;
     }
     table {
       font-family: "Caladea", serif;
@@ -140,7 +153,10 @@
       td {
         padding: 10px;
       }
-      th:nth-of-type(2) {
+      svg {
+        margin-left: 5px;
+      }
+      th:last-of-type() {
         width: 20%;
       }
       th:nth-of-type(2),
@@ -151,7 +167,7 @@
       td:nth-of-type(3),
       th:nth-of-type(4),
       td:nth-of-type(4) {
-        width: 5%;
+        width: 12%;
       }
       thead {
         padding: 10px;
@@ -171,8 +187,9 @@
           }
           span.token-symbol {
             color: #ec994b;
-            font-weight: 700;
-            margin-left: 10px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-left: 5px;
           }
         }
         tr:last-of-type {
@@ -276,4 +293,28 @@ button.publish-token {
   background-color: #ffaa00;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
     rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+
+  &:hover {
+    transform: scale(1.05);
+    outline: 2px solid #15133c;
+  }
+}
+button.stake-popup {
+  cursor: pointer;
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  padding: 10px 20px;
+  margin: 20px 0px;
+  background-color: #ffaa00;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+
+  &:hover {
+    transform: scale(1.05);
+    outline: 2px solid #15133c;
+  }
 }

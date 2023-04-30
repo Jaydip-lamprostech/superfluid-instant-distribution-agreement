@@ -22,7 +22,15 @@ function IdaStaking() {
   const { address } = useAccount();
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [count, setCount] = useState(1);
+  const [enteredStakeValues, setEnteredStakeValues] = useState({
+    publishId: "",
+    amount: "",
+  });
+
   const [tokenData, setTokenData] = useState();
+
   const [publishTokenDetails, setPublishTokenDetails] = useState({
     tokenAddress: "",
     tokenName: "",
@@ -38,7 +46,12 @@ function IdaStaking() {
   const handleClose = () => {
     setOpen(false);
   };
-
+  const handleOpen2 = () => {
+    setOpen2(true);
+  };
+  const handleClose2 = () => {
+    setOpen2(false);
+  };
   const style = {
     position: "absolute",
     top: "50%",
@@ -55,123 +68,7 @@ function IdaStaking() {
     overflowX: "hidden",
     maxWidth: "700px",
   };
-
-  const data = [
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-    {
-      tokenName: "Ether",
-      tokenSymbol: "ETH",
-      publisherAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAddress: "0xB7F98F7571B953a2d6Bc2EE6417E64FC7664C865",
-      tokenAmount: "2500",
-      tokenStartDate: "20 Oct 2023",
-      tokenEndDate: "25 Oct 2023",
-    },
-  ];
-
   // contract functions
-
-  const approve = async () => {
-    console.log("approve");
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-
-        const sf = await Framework.create({
-          chainId: 80001,
-          provider: provider,
-        });
-        const daix = await sf.loadSuperToken(publishTokenDetails.tokenAddress); // add the token address from user entered datta
-
-        // checking allowance rate
-        // const allowence = await daix.allowance({
-        //   owner: "0x9D6d094B29A421168F5B16bCfb41a15eA3A23950",
-        //   spender: "0x4d66055Fa02bd890498AEbeB415c4F2007053c6e",
-        //   providerOrSigner: signer,
-        // });
-        // console.log(allowence);
-        // condition for approval
-        const moneyRouterApproval = daix.approve({
-          receiver: CONTRACT_ADDRESS,
-          amount: ethers.utils.parseEther(String(10)),
-        });
-        await moneyRouterApproval.exec(signer).then(async function (tx) {
-          await tx.wait();
-
-          console.log(`
-                  Congrats! You've just successfully approved the money router contract.
-                  Tx Hash: ${tx.hash}
-              `);
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const publishTokenNew = async () => {
     try {
@@ -214,7 +111,7 @@ function IdaStaking() {
         console.log(days); // output: 242
         console.log(
           publishTokenDetails.tokenAddress,
-          publishTokenDetails.tokenAmount,
+          ethers.utils.parseEther(String(publishTokenDetails.tokenAmount)),
           publishTokenDetails.startDate,
           days,
           publishTokenDetails.tokenName,
@@ -236,8 +133,10 @@ function IdaStaking() {
           publishTokenDetails.tokenName,
           publishTokenDetails.tokenSymbol
         );
-        tx.wait();
+        await tx.wait();
+        setCount((prev) => prev + 1);
         console.log("Done");
+        handleClose();
       }
     } catch (error) {
       console.log(error);
@@ -251,19 +150,94 @@ function IdaStaking() {
 
       const data = await stackingContract.getAllPublisherData();
       console.log(data);
+      let arr = [];
+      for (let i = 0; i < data.length; i++) {
+        const epoch = parseInt(data[i].startTime); // May 4, 2021 00:00:00 UTC
+        const now = Date.now(); // current epoch time in milliseconds
+        let clamable;
+        let unstakable;
+        const timeDiff = now - epoch * 1000; // difference in milliseconds
+        console.log("timeDiff", timeDiff);
+        const timeDiffInHours = timeDiff / 3600000;
+        if (timeDiffInHours >= 24) {
+          clamable = 1;
+        } else {
+          clamable = 0;
+        }
 
-      for (let i = 0; i < data.length; i++) {}
-      setTokenData(data);
+        let endDate = parseInt(data[i].startTime) + 86400 * data[i].no_day;
+        arr.push({
+          stakedStatus: await checkStake(data[i].id),
+          stakedAmount: await getUserStakedamount(data[i].id),
+          isClamable: clamable ? true : false,
+          isUnstakable: timeDiff < 0 ? false : true,
+          tokenName: data[i].tokenName,
+          tokenSymbol: data[i].tokenSymbol,
+          tokenAdd: data[i].token,
+          publisherAdd: data[i].publisher,
+          amount: data[i].amount / Math.pow(10, 18),
+          sDate: new Date(
+            parseInt(data[i].startTime) * 1000
+          ).toLocaleDateString(),
+          endDate: new Date(endDate * 1000).toLocaleDateString(),
+          id: data[i].id,
+          index_id: data[i].index_id,
+        });
+        // arr.push();
+      }
+      console.log(arr);
+      // setStakeStatus(arr);
+      setTokenData(arr);
       setLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
   useEffect(() => {
-    if (address) {
+    if (address && count) {
       getPublisherData();
     }
-  }, [address]);
+  }, [count, address]);
+
+  const checkStake = async (id) => {
+    console.log("inside the checkStake function");
+    try {
+      const stackingContract = await stackingContractInstance();
+      const data = await stackingContract.hasUserStaked(address, id);
+      console.log(data);
+      return data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getUserStakedamount = async (id) => {
+    try {
+      const stackingContract = await stackingContractInstance();
+      const data = await stackingContract.userCampaignStakedamount(address, id);
+      console.log(data);
+      return parseInt(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const stake = async () => {
+    try {
+      const stackingContract = await stackingContractInstance();
+      const tx = await stackingContract.stakeTokens(
+        ethers.utils.parseEther(String(enteredStakeValues.amount)),
+        enteredStakeValues.publishId,
+        {
+          value: ethers.utils.parseEther(String(enteredStakeValues.amount)),
+        }
+      );
+      await tx.wait();
+      console.log(tx);
+      handleClose2();
+      setCount((prev) => prev + 1);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   // const publishToken = async () => {
   //   try {
   //     console.log(ethers.utils.parseEther(String(10)));
@@ -372,49 +346,101 @@ function IdaStaking() {
               </tr>
             </thead>
             <tbody>
-              {tokenData.map((item, key) => {
-                return (
-                  <tr key={key}>
-                    <td>{key + 1}</td>
-                    <td>
-                      {item.tokenName}{" "}
-                      <span className="token-symbol">{item.tokenSymbol}</span>
-                    </td>
-                    <td>
-                      {item.token.slice(0, 4) +
-                        "..." +
-                        item.token.slice(
-                          item.token?.length - 4,
-                          item.token?.length
+              {count &&
+                tokenData.map((item, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{key + 1}</td>
+                      <td>
+                        {item.tokenName}{" "}
+                        <span className="token-symbol">{item.tokenSymbol}</span>
+                      </td>
+                      <td>
+                        {item.tokenAdd.slice(0, 4) +
+                          "..." +
+                          item.tokenAdd.slice(
+                            item.tokenAdd?.length - 4,
+                            item.tokenAdd?.length
+                          )}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          enableBackground="new 0 0 24 24"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          fill="#73777b"
+                          onClick={() =>
+                            navigator.clipboard.writeText(item.tokenAdd)
+                          }
+                        >
+                          <g>
+                            <rect fill="none" height="24" width="24" />
+                          </g>
+                          <g>
+                            <path d="M15,20H5V7c0-0.55-0.45-1-1-1h0C3.45,6,3,6.45,3,7v13c0,1.1,0.9,2,2,2h10c0.55,0,1-0.45,1-1v0C16,20.45,15.55,20,15,20z M20,16V4c0-1.1-0.9-2-2-2H9C7.9,2,7,2.9,7,4v12c0,1.1,0.9,2,2,2h9C19.1,18,20,17.1,20,16z M18,16H9V4h9V16z" />
+                          </g>
+                        </svg>
+                      </td>
+                      <td>
+                        {item.publisherAdd.slice(0, 4) +
+                          "..." +
+                          item.publisherAdd.slice(
+                            item.publisherAdd?.length - 4,
+                            item.publisherAdd?.length
+                          )}{" "}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          enableBackground="new 0 0 24 24"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          width="18px"
+                          fill="#73777b"
+                          onClick={() =>
+                            navigator.clipboard.writeText(item.publisherAdd)
+                          }
+                        >
+                          <g>
+                            <rect fill="none" height="24" width="24" />
+                          </g>
+                          <g>
+                            <path d="M15,20H5V7c0-0.55-0.45-1-1-1h0C3.45,6,3,6.45,3,7v13c0,1.1,0.9,2,2,2h10c0.55,0,1-0.45,1-1v0C16,20.45,15.55,20,15,20z M20,16V4c0-1.1-0.9-2-2-2H9C7.9,2,7,2.9,7,4v12c0,1.1,0.9,2,2,2h9C19.1,18,20,17.1,20,16z M18,16H9V4h9V16z" />
+                          </g>
+                        </svg>
+                      </td>
+                      <td>{item.amount}</td>
+                      <td>{item.sDate}</td>
+                      <td>{item.endDate}</td>
+                      <td>
+                        {item.stakedAmount > 0 ? (
+                          <button className="stake disable">Staked</button>
+                        ) : (
+                          <button
+                            className="stake"
+                            onClick={() => {
+                              setEnteredStakeValues({
+                                ...enteredStakeValues,
+                                publishId: item.id,
+                              });
+                              handleOpen2();
+                            }}
+                          >
+                            Stake
+                          </button>
                         )}
-                    </td>
-                    <td>
-                      {item.publisher.slice(0, 4) +
-                        "..." +
-                        item.publisher.slice(
-                          item.publisher?.length - 4,
-                          item.publisher?.length
+                        {item.stakedStatus && item.isClamable ? (
+                          <button className="claim">Claim</button>
+                        ) : (
+                          <button className="claim disable">Claim</button>
                         )}
-                    </td>
-                    <td>{parseFloat(item.amount) / Math.pow(10, 18)}</td>
-                    <td>
-                      {new Date(
-                        parseInt(item.startTime) * 1000
-                      ).toLocaleDateString()}
-                    </td>
-                    <td>
-                      {new Date(
-                        (parseInt(item.startTime) + parseInt(item.no_day)) *
-                          1000
-                      ).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <button className="stake">Stake</button>
-                      <button className="claim">Claim</button>
-                    </td>
-                  </tr>
-                );
-              })}
+                        {item.isUnstakable && item.stakedStatus ? (
+                          <button className="unstake">Unstake</button>
+                        ) : (
+                          <button className="unstake disable">disable</button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -554,6 +580,56 @@ function IdaStaking() {
                 onClick={() => publishTokenNew()}
               >
                 Publish
+              </button>
+            </div>
+          </Box>
+        </Modal>
+        <Modal
+          open={open2}
+          onClose={handleClose2}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              style={{
+                position: "sticky",
+                top: "0",
+                backgroundColor: "#f3f4f6",
+                padding: "20px 20px",
+                margin: "0px",
+                fontWeight: 600,
+                zIndex: 50,
+              }}
+            >
+              Stake
+            </Typography>{" "}
+            <div
+              id="modal-modal-description"
+              style={{ padding: "1.5rem", textAlign: "center" }}
+            >
+              <div className="publish-token-inputs">
+                <TextField
+                  // error
+                  id="outlined-error-helper-text"
+                  label="Stake Amount"
+                  // defaultValue="Hello World"
+                  // helperText="Incorrect entry."
+                  onChange={(e) =>
+                    setEnteredStakeValues({
+                      ...enteredStakeValues,
+                      amount: e.target.value,
+                    })
+                  }
+                  fullWidth
+                />
+              </div>
+
+              <button className="stake-popup" onClick={() => stake()}>
+                Stake
               </button>
             </div>
           </Box>
