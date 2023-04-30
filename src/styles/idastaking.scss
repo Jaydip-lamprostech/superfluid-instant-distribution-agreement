@@ -96,7 +96,7 @@
   }
   .second-section {
     margin: 30px 0px;
-    height: 500px;
+    min-height: 500px;
     width: 100%;
     border-radius: 20px;
     border: 2px dashed #73777b;
@@ -173,6 +173,11 @@
             color: #ec994b;
             font-weight: 700;
             margin-left: 10px;
+          }
+        }
+        tr:last-of-type {
+          td {
+            border-bottom: none;
           }
         }
       }
