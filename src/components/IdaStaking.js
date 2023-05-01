@@ -213,7 +213,7 @@ function IdaStaking() {
     if (address && count) {
       getPublisherData();
     }
-  }, [count]);
+  }, [count, address]);
 
   const checkStake = async (id) => {
     console.log("inside the checkStake function");
