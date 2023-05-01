@@ -670,7 +670,7 @@ function IdaStaking() {
                     });
                   }}
                   // defaultValue="Hello World"
-                  helperText="Token Amount is total reward for stakers."
+                  helperText="The token amount is the total amount that you want to distribute for the number of days."
                   fullWidth
                 />
               </div>
