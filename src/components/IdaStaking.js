@@ -399,8 +399,8 @@ function IdaStaking() {
             <div className="banner-inside-1">
               <h1>Publish Token</h1>
               <p>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto,
-                sunt?
+                Publish your token with the reward amount, and let others stake
+                it and earn some rewards.
               </p>
               <button onClick={handleOpen}>Publish Token</button>
             </div>
