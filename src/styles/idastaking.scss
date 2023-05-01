@@ -133,7 +133,10 @@
         rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
     }
     button.disable {
-      pointer-events: none;
+      // pointer-events: none;
+      &:hover {
+        transform: none;
+      }
       opacity: 0.2;
     }
     button.unstake {
@@ -281,6 +284,7 @@ div.publish-token-inputs {
   margin: 20px 0px;
 }
 button.publish-token {
+  min-width: 150px;
   cursor: pointer;
   letter-spacing: 1px;
   font-size: 1.2rem;
@@ -299,7 +303,12 @@ button.publish-token {
     outline: 2px solid #15133c;
   }
 }
+button.publish-token:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
 button.stake-popup {
+  min-width: 150px;
   cursor: pointer;
   letter-spacing: 1px;
   font-size: 1.2rem;
@@ -317,6 +326,11 @@ button.stake-popup {
     transform: scale(1.05);
     outline: 2px solid #15133c;
   }
+}
+
+.publish-info {
+  font-size: 0.865rem;
+  margin: 20px 0px;
 }
 
 // loader

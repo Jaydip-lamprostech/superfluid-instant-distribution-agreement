@@ -20,6 +20,7 @@
     "react-blockies": "^1.4.1",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "react-tooltip": "^5.11.1",
     "universal-cookie": "^4.0.4",
     "urql": "^3.0.3",
     "wagmi": "^0.9.5",

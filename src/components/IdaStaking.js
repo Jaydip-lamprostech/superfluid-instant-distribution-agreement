@@ -4,6 +4,8 @@ import "../styles/idastaking.scss";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import stackingContract from "../artifacts/StackingContract.json";
+import "react-tooltip/dist/react-tooltip.css";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import {
   Box,
   Button,
@@ -24,6 +26,8 @@ function IdaStaking() {
   const [transLoading, setTransLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [copiedKey, setCopiedKey] = useState({ key: -1, add: "" });
   const [count, setCount] = useState(1);
   const [enteredStakeValues, setEnteredStakeValues] = useState({
     publishId: "",
@@ -46,6 +50,14 @@ function IdaStaking() {
   };
   const handleClose = () => {
     setOpen(false);
+    setPublishTokenDetails({
+      tokenAddress: "",
+      tokenName: "",
+      tokenSymbol: "",
+      tokenAmount: "",
+      startDate: "",
+      endDate: "",
+    });
   };
   const handleOpen2 = () => {
     setOpen2(true);
@@ -201,7 +213,7 @@ function IdaStaking() {
     if (address && count) {
       getPublisherData();
     }
-  }, [count, address]);
+  }, [count]);
 
   const checkStake = async (id) => {
     console.log("inside the checkStake function");
@@ -369,7 +381,17 @@ function IdaStaking() {
       return null;
     }
   };
-  if (!loading)
+
+  const copyFunction = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setCopiedKey({ key: key, add: text });
+    setTimeout(() => {
+      setCopied(false);
+      setCopiedKey({ key: -1, add: "" });
+    }, 1000);
+  };
+  if (!loading && address)
     return (
       <div className="home">
         <div className="first-section">
@@ -418,24 +440,42 @@ function IdaStaking() {
                             item.tokenAdd?.length - 4,
                             item.tokenAdd?.length
                           )}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          enableBackground="new 0 0 24 24"
-                          height="18px"
-                          viewBox="0 0 24 24"
-                          width="18px"
-                          fill="#73777b"
-                          onClick={() =>
-                            navigator.clipboard.writeText(item.tokenAdd)
-                          }
-                        >
-                          <g>
-                            <rect fill="none" height="24" width="24" />
-                          </g>
-                          <g>
-                            <path d="M15,20H5V7c0-0.55-0.45-1-1-1h0C3.45,6,3,6.45,3,7v13c0,1.1,0.9,2,2,2h10c0.55,0,1-0.45,1-1v0C16,20.45,15.55,20,15,20z M20,16V4c0-1.1-0.9-2-2-2H9C7.9,2,7,2.9,7,4v12c0,1.1,0.9,2,2,2h9C19.1,18,20,17.1,20,16z M18,16H9V4h9V16z" />
-                          </g>
-                        </svg>
+                        {copied &&
+                        copiedKey.key === key &&
+                        copiedKey.add === item.tokenAdd ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            enable-background="new 0 0 20 20"
+                            height="18px"
+                            viewBox="0 0 20 20"
+                            width="18px"
+                            fill="#ffaa00"
+                          >
+                            <g>
+                              <rect fill="none" height="20" width="20" />
+                            </g>
+                            <g>
+                              <path d="M18,10l-1.77-2.03l0.25-2.69l-2.63-0.6l-1.37-2.32L10,3.43L7.53,2.36L6.15,4.68L3.53,5.28l0.25,2.69L2,10l1.77,2.03 l-0.25,2.69l2.63,0.6l1.37,2.32L10,16.56l2.47,1.07l1.37-2.32l2.63-0.6l-0.25-2.69L18,10z M13.18,8.47l-4.24,4.24 c-0.2,0.2-0.51,0.2-0.71,0L6.82,11.3c-0.2-0.2-0.2-0.51,0-0.71s0.51-0.2,0.71,0l1.06,1.06l3.89-3.89c0.2-0.2,0.51-0.2,0.71,0 S13.38,8.28,13.18,8.47z" />
+                            </g>
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            enableBackground="new 0 0 24 24"
+                            height="18px"
+                            viewBox="0 0 24 24"
+                            width="18px"
+                            fill="#73777b"
+                            onClick={() => copyFunction(item.tokenAdd, key)}
+                          >
+                            <g>
+                              <rect fill="none" height="24" width="24" />
+                            </g>
+                            <g>
+                              <path d="M15,20H5V7c0-0.55-0.45-1-1-1h0C3.45,6,3,6.45,3,7v13c0,1.1,0.9,2,2,2h10c0.55,0,1-0.45,1-1v0C16,20.45,15.55,20,15,20z M20,16V4c0-1.1-0.9-2-2-2H9C7.9,2,7,2.9,7,4v12c0,1.1,0.9,2,2,2h9C19.1,18,20,17.1,20,16z M18,16H9V4h9V16z" />
+                            </g>
+                          </svg>
+                        )}
                       </td>
                       <td>
                         {item.publisherAdd.slice(0, 4) +
@@ -444,24 +484,42 @@ function IdaStaking() {
                             item.publisherAdd?.length - 4,
                             item.publisherAdd?.length
                           )}{" "}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          enableBackground="new 0 0 24 24"
-                          height="18px"
-                          viewBox="0 0 24 24"
-                          width="18px"
-                          fill="#73777b"
-                          onClick={() =>
-                            navigator.clipboard.writeText(item.publisherAdd)
-                          }
-                        >
-                          <g>
-                            <rect fill="none" height="24" width="24" />
-                          </g>
-                          <g>
-                            <path d="M15,20H5V7c0-0.55-0.45-1-1-1h0C3.45,6,3,6.45,3,7v13c0,1.1,0.9,2,2,2h10c0.55,0,1-0.45,1-1v0C16,20.45,15.55,20,15,20z M20,16V4c0-1.1-0.9-2-2-2H9C7.9,2,7,2.9,7,4v12c0,1.1,0.9,2,2,2h9C19.1,18,20,17.1,20,16z M18,16H9V4h9V16z" />
-                          </g>
-                        </svg>
+                        {copied &&
+                        copiedKey.key === key &&
+                        copiedKey.add === item.publisherAdd ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            enable-background="new 0 0 20 20"
+                            height="18px"
+                            viewBox="0 0 20 20"
+                            width="18px"
+                            fill="#ffaa00"
+                          >
+                            <g>
+                              <rect fill="none" height="20" width="20" />
+                            </g>
+                            <g>
+                              <path d="M18,10l-1.77-2.03l0.25-2.69l-2.63-0.6l-1.37-2.32L10,3.43L7.53,2.36L6.15,4.68L3.53,5.28l0.25,2.69L2,10l1.77,2.03 l-0.25,2.69l2.63,0.6l1.37,2.32L10,16.56l2.47,1.07l1.37-2.32l2.63-0.6l-0.25-2.69L18,10z M13.18,8.47l-4.24,4.24 c-0.2,0.2-0.51,0.2-0.71,0L6.82,11.3c-0.2-0.2-0.2-0.51,0-0.71s0.51-0.2,0.71,0l1.06,1.06l3.89-3.89c0.2-0.2,0.51-0.2,0.71,0 S13.38,8.28,13.18,8.47z" />
+                            </g>
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            enableBackground="new 0 0 24 24"
+                            height="18px"
+                            viewBox="0 0 24 24"
+                            width="18px"
+                            fill="#73777b"
+                            onClick={() => copyFunction(item.publisherAdd, key)}
+                          >
+                            <g>
+                              <rect fill="none" height="24" width="24" />
+                            </g>
+                            <g>
+                              <path d="M15,20H5V7c0-0.55-0.45-1-1-1h0C3.45,6,3,6.45,3,7v13c0,1.1,0.9,2,2,2h10c0.55,0,1-0.45,1-1v0C16,20.45,15.55,20,15,20z M20,16V4c0-1.1-0.9-2-2-2H9C7.9,2,7,2.9,7,4v12c0,1.1,0.9,2,2,2h9C19.1,18,20,17.1,20,16z M18,16H9V4h9V16z" />
+                            </g>
+                          </svg>
+                        )}
                       </td>
                       <td>{item.amount}</td>
                       <td>{item.sDate}</td>
@@ -488,20 +546,35 @@ function IdaStaking() {
                             className="claim"
                             onClick={() => claimFunds(item.id, item.tokenAdd)}
                           >
-                            Claim
+                            {transLoading ? (
+                              <span className="loader"></span>
+                            ) : (
+                              "Claim"
+                            )}
                           </button>
                         ) : (
-                          <button className="claim disable">Claim</button>
+                          <button className="claim disable" id="claim-button">
+                            Claim
+                          </button>
                         )}
                         {item.isUnstakable && item.stakedStatus ? (
                           <button
                             className="unstake"
                             onClick={() => unStake(item.id)}
                           >
-                            Unstake
+                            {transLoading ? (
+                              <span className="loader"></span>
+                            ) : (
+                              "Unstake"
+                            )}
                           </button>
                         ) : (
-                          <button className="unstake disable">Unstake</button>
+                          <button
+                            className="unstake disable"
+                            id="unstake-button"
+                          >
+                            Unstake
+                          </button>
                         )}
                       </td>
                     </tr>
@@ -597,7 +670,7 @@ function IdaStaking() {
                     });
                   }}
                   // defaultValue="Hello World"
-                  // helperText="Incorrect entry."
+                  helperText="Token Amount is total reward for stakers."
                   fullWidth
                 />
               </div>
@@ -641,26 +714,82 @@ function IdaStaking() {
                   />
                 </div>
               </div>
-              <button
-                className="publish-token"
-                onClick={() => publishTokenNew()}
-              >
-                {transLoading ? (
-                  <svg
-                    className="animate-spin button-spin-svg-pic"
-                    version="1.1"
-                    id="L9"
-                    xmlns="http://www.w3.org/2000/svg"
-                    x="0px"
-                    y="0px"
-                    viewBox="0 0 100 100"
+              {publishTokenDetails.tokenAmount &&
+              publishTokenDetails.tokenName &&
+              publishTokenDetails.tokenSymbol &&
+              publishTokenDetails.startDate &&
+              publishTokenDetails.endDate ? (
+                <>
+                  <p className="publish-info">
+                    Your token {publishTokenDetails.tokenName} will be available
+                    for stake on
+                    <b style={{ margin: "0px 5px" }}>
+                      {publishTokenDetails.startDate
+                        ? new Date(
+                            parseInt(publishTokenDetails.startDate) * 1000
+                          ).toLocaleDateString()
+                        : ""}
+                    </b>
+                    day and will not be available for stake after
+                    <b style={{ margin: "0px 5px" }}>
+                      {publishTokenDetails.startDate
+                        ? new Date(
+                            parseInt(publishTokenDetails.endDate) * 1000
+                          ).toLocaleDateString() + "."
+                        : ""}
+                    </b>
+                    Your total reward amount
+                    <b style={{ margin: "0px 5px" }}>
+                      {publishTokenDetails.tokenAmount +
+                        " " +
+                        publishTokenDetails.tokenSymbol}
+                    </b>
+                    will be equally distributed per day so your token reward per
+                    day will be
+                    <b style={{ margin: "0px 5px" }}>
+                      {(
+                        publishTokenDetails.tokenAmount /
+                        ((publishTokenDetails.endDate -
+                          publishTokenDetails.startDate) /
+                          86400)
+                      ).toFixed(4) +
+                        " " +
+                        publishTokenDetails.tokenSymbol +
+                        "."}
+                    </b>
+                  </p>
+                  <button
+                    className="publish-token"
+                    onClick={() => publishTokenNew()}
                   >
-                    <path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"></path>
-                  </svg>
-                ) : (
-                  "Stake"
-                )}
-              </button>
+                    {transLoading ? (
+                      <span className="loader"></span>
+                    ) : (
+                      "Publish"
+                    )}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "red",
+                      textAlign: "left",
+                      margin: "10px 0px",
+                    }}
+                  >
+                    * All the fields are required
+                  </p>
+                  <button
+                    className="publish-token"
+                    disabled
+                    // onClick={() => publishTokenNew()}
+                  >
+                    Publish
+                  </button>
+                </>
+              )}
             </div>
           </Box>
         </Modal>
@@ -709,20 +838,68 @@ function IdaStaking() {
               </div>
 
               <button className="stake-popup" onClick={() => stake()}>
-                {transLoading ? (
-                  <div class="lds-ellipsis">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                ) : (
-                  "Stake"
-                )}
+                {transLoading ? <span className="loader"></span> : "Stake"}
               </button>
             </div>
           </Box>
         </Modal>
+        <ReactTooltip
+          anchorSelect="#claim-button"
+          place="top"
+          style={{
+            maxWidth: "250px",
+            wordBreak: "break-all",
+            backgroundColor: "#15133c",
+          }}
+          content="You have to stake first in order to claim. If you have staked already, you must wait 24 hours to claim the rewards."
+        />
+        <ReactTooltip
+          anchorSelect="#unstake-button"
+          place="top"
+          style={{
+            maxWidth: "250px",
+            wordBreak: "break-all",
+            backgroundColor: "#15133c",
+          }}
+          content="You have to stake first in order to unstake your amount."
+        />
+      </div>
+    );
+  else
+    return (
+      <div className="home">
+        <div className="first-section">
+          <div className="banner">
+            <div className="banner-inside-1">
+              <h1>Publish Token</h1>
+              <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto,
+                sunt?
+              </p>
+              <button onClick={handleOpen}>Publish Token</button>
+            </div>
+            <div className="banner-inside-2">
+              <img src={coin} alt="coin" />
+            </div>
+          </div>
+        </div>
+        <div className="second-section">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Token</th>
+                <th>Token Address</th>
+                <th>Publisher Address</th>
+                <th>Amount</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     );
 }
